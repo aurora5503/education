@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
-import { contentPack } from '../content/contentPack'
 import { PREFILL_MESSAGE_TYPE, serializePrefillToQuery } from '../lib/prefill'
+import { useContentPack } from '../content/useContentPack'
 import type { PrefillPayload } from '../types/content'
 
 const presets: Record<string, PrefillPayload> = {
@@ -40,6 +40,7 @@ const presets: Record<string, PrefillPayload> = {
 }
 
 export function PrefillDemoPage() {
+  const { contentPack } = useContentPack()
   const [presetKey, setPresetKey] = useState<keyof typeof presets>('depressionFollowUp')
   const [messageStatus, setMessageStatus] = useState('尚未發送')
   const iframeRef = useRef<HTMLIFrameElement>(null)

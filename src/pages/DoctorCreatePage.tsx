@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { HandoutPreview } from '../components/HandoutPreview'
-import { contentPack } from '../content/contentPack'
+import { useContentPack } from '../content/useContentPack'
 import { buildHandoutDocument } from '../lib/handout'
 import { parseQueryPrefill, PREFILL_MESSAGE_TYPE, readPrefillMessage } from '../lib/prefill'
 import type { PrefillPayload, VisitContext } from '../types/content'
@@ -17,7 +17,8 @@ const blankVisitContext: VisitContext = {
 }
 
 export function DoctorCreatePage() {
-  const queryPrefill = parseQueryPrefill(window.location.search)
+  const { contentPack } = useContentPack()
+  const queryPrefill = useMemo(() => parseQueryPrefill(window.location.search, contentPack), [contentPack])
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(queryPrefill?.diagnosisIds?.[0] ?? '')
   const [selectedMedicationIds, setSelectedMedicationIds] = useState<string[]>(queryPrefill?.medicationIds ?? [])
   const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>(queryPrefill?.selectedModuleIds ?? [])
@@ -38,7 +39,7 @@ export function DoctorCreatePage() {
 
   const selectedDiagnosis = useMemo(
     () => contentPack.diagnoses.find((diagnosis) => diagnosis.id === selectedDiagnosisId),
-    [selectedDiagnosisId],
+    [contentPack.diagnoses, selectedDiagnosisId],
   )
 
   const applyPrefill = (payload: PrefillPayload, via: PrefillState['via']) => {
@@ -70,7 +71,7 @@ export function DoctorCreatePage() {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const payload = readPrefillMessage(event.data)
+      const payload = readPrefillMessage(event.data, contentPack)
 
       if (payload) {
         applyPrefill(payload, 'postMessage')
@@ -80,11 +81,11 @@ export function DoctorCreatePage() {
     window.addEventListener('message', handleMessage)
 
     return () => window.removeEventListener('message', handleMessage)
-  }, [])
+  }, [contentPack])
 
   const document = useMemo(
     () =>
-      buildHandoutDocument({
+      buildHandoutDocument(contentPack, {
         diagnosisIds: selectedDiagnosisId ? [selectedDiagnosisId] : [],
         medicationIds: selectedMedicationIds,
         selectedModuleIds,
@@ -92,7 +93,7 @@ export function DoctorCreatePage() {
         visitContext,
         sourceSystem: prefillState?.sourceSystem,
       }),
-    [note, prefillState?.sourceSystem, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
+    [contentPack, note, prefillState?.sourceSystem, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
   )
 
   const recommendedMedicationIds = selectedDiagnosis?.relatedMedicationIds ?? []

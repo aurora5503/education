@@ -1,4 +1,5 @@
 import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import { ContentEditorPage } from './pages/ContentEditorPage'
 import { DoctorCreatePage } from './pages/DoctorCreatePage'
 import { PatientTopicPage } from './pages/PatientTopicPage'
 import { PrefillDemoPage } from './pages/PrefillDemoPage'
@@ -12,6 +13,9 @@ function App() {
           <span className="brand-title">明亮版精神科衛教平台 MVP</span>
         </div>
         <nav className="site-nav" aria-label="Primary navigation">
+          <NavLink to="/doctor/content" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            內容編輯
+          </NavLink>
           <NavLink to="/doctor/create" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             醫師端
           </NavLink>
@@ -29,11 +33,12 @@ function App() {
 
       <main className="site-main">
         <Routes>
-          <Route path="/" element={<Navigate to="/doctor/create" replace />} />
+          <Route path="/" element={<Navigate to="/doctor/content" replace />} />
+          <Route path="/doctor/content" element={<ContentEditorPage />} />
           <Route path="/doctor/create" element={<DoctorCreatePage />} />
           <Route path="/patient/topic/:slug" element={<PatientTopicPage />} />
           <Route path="/dev/prefill-demo" element={<PrefillDemoPage />} />
-          <Route path="*" element={<Navigate to="/doctor/create" replace />} />
+          <Route path="*" element={<Navigate to="/doctor/content" replace />} />
         </Routes>
       </main>
     </div>

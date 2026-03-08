@@ -58,7 +58,8 @@ a {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -416,6 +417,7 @@ button {
 
 .field input,
 .field textarea,
+.field select,
 .code-block,
 .inline-code {
   width: 100%;
@@ -429,7 +431,8 @@ button {
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   border-color: rgba(11, 122, 104, 0.48);
   box-shadow: 0 0 0 4px rgba(11, 122, 104, 0.1);
 }
@@ -658,16 +661,193 @@ button {
   margin-top: 8px;
 }
 
+.editor-hero {
+  align-items: center;
+}
+
+.editor-status-card {
+  align-content: start;
+}
+
+.editor-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.editor-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.editor-sidebar,
+.editor-form-panel {
+  min-height: 100%;
+}
+
+.editor-section-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.editor-sidebar .action-row {
+  margin-bottom: 18px;
+}
+
+.editor-item-list,
+.editor-form-stack,
+.editor-faq-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.editor-item-button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(250, 246, 240, 0.95));
+  text-align: left;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.editor-item-button strong {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+}
+
+.editor-item-button span,
+.editor-status-note {
+  color: var(--muted);
+}
+
+.editor-item-button.active {
+  border-color: rgba(215, 118, 79, 0.45);
+  box-shadow: 0 18px 36px rgba(215, 118, 79, 0.12);
+  background: linear-gradient(180deg, rgba(255, 245, 236, 0.98), rgba(255, 252, 247, 0.96));
+}
+
+.editor-long-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.editor-recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.editor-recommendation-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.editor-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.editor-check-item {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.82);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.editor-check-item:hover {
+  transform: translateY(-1px);
+}
+
+.editor-check-item.active {
+  border-color: rgba(11, 122, 104, 0.38);
+  box-shadow: 0 12px 24px rgba(11, 122, 104, 0.08);
+  background: linear-gradient(180deg, rgba(237, 251, 247, 0.96), rgba(255, 252, 247, 0.96));
+}
+
+.editor-check-item input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.editor-check-item strong {
+  display: block;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+}
+
+.editor-check-item span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.editor-inline-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.editor-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.editor-inline-heading h3 {
+  margin: 0;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.2rem;
+}
+
+.editor-faq-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
 @media (max-width: 1180px) {
   .doctor-layout,
   .demo-layout,
   .topic-layout,
+  .editor-layout,
+  .editor-summary-grid,
   .page-hero,
   .diagnosis-grid,
   .selection-grid,
   .medication-grid,
   .module-list,
   .field-grid,
+  .editor-long-grid,
+  .editor-recommendation-grid,
   .topic-columns {
     grid-template-columns: 1fr;
   }
@@ -732,7 +912,9 @@ button {
   .panel,
   .topic-layout,
   .demo-layout,
-  .patient-topic-panel {
+  .patient-topic-panel,
+  .editor-summary-grid,
+  .editor-layout {
     display: none !important;
   }
 

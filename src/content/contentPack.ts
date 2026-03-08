@@ -254,7 +254,7 @@ const modules = [
   },
 ]
 
-export const contentPack: ContentPack = {
+export const defaultContentPack: ContentPack = {
   diagnoses,
   medications,
   modules,
@@ -266,17 +266,27 @@ export const contentPack: ContentPack = {
   },
 }
 
-export const diagnosisMap = new Map(diagnoses.map((diagnosis) => [diagnosis.id, diagnosis]))
-export const medicationMap = new Map(medications.map((medication) => [medication.id, medication]))
-export const moduleMap = new Map(modules.map((module) => [module.id, module]))
+export const contentPack = defaultContentPack
 
-export function getTopicBySlug(slug: string) {
-  const diagnosis = diagnoses.find((item) => item.slug === slug)
+export function cloneContentPack(content: ContentPack = defaultContentPack): ContentPack {
+  return JSON.parse(JSON.stringify(content)) as ContentPack
+}
+
+export function createContentMaps(content: ContentPack) {
+  return {
+    diagnosisMap: new Map(content.diagnoses.map((diagnosis) => [diagnosis.id, diagnosis])),
+    medicationMap: new Map(content.medications.map((medication) => [medication.id, medication])),
+    moduleMap: new Map(content.modules.map((module) => [module.id, module])),
+  }
+}
+
+export function getTopicBySlug(content: ContentPack, slug: string) {
+  const diagnosis = content.diagnoses.find((item) => item.slug === slug)
   if (diagnosis) {
     return { kind: 'diagnosis' as const, topic: diagnosis }
   }
 
-  const medication = medications.find((item) => item.slug === slug)
+  const medication = content.medications.find((item) => item.slug === slug)
   if (medication) {
     return { kind: 'medication' as const, topic: medication }
   }
@@ -284,6 +294,8 @@ export function getTopicBySlug(slug: string) {
   return null
 }
 
-export function getRelatedMedications(ids: string[]) {
+export function getRelatedMedications(content: ContentPack, ids: string[]) {
+  const { medicationMap } = createContentMaps(content)
+
   return ids.map((id) => medicationMap.get(id)).filter(Boolean) as MedicationTopic[]
 }

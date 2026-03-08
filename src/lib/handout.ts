@@ -1,5 +1,5 @@
-import { contentPack, diagnosisMap, medicationMap, moduleMap } from '../content/contentPack'
-import type { HandoutDocument, HandoutRequest, VisitContext } from '../types/content'
+import { createContentMaps } from '../content/contentPack'
+import type { ContentPack, HandoutDocument, HandoutRequest, VisitContext } from '../types/content'
 
 const formatVisitContext = (visitContext?: VisitContext) => {
   if (!visitContext) {
@@ -13,7 +13,8 @@ const formatVisitContext = (visitContext?: VisitContext) => {
 
 const unique = <T,>(items: T[]) => [...new Set(items)]
 
-export function buildHandoutDocument(request: HandoutRequest): HandoutDocument | null {
+export function buildHandoutDocument(contentPack: ContentPack, request: HandoutRequest): HandoutDocument | null {
+  const { diagnosisMap, medicationMap, moduleMap } = createContentMaps(contentPack)
   const diagnosisId = request.diagnosisIds.find((id) => diagnosisMap.has(id))
 
   if (!diagnosisId) {

@@ -1,9 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
-import { contentPack, getRelatedMedications, getTopicBySlug } from '../content/contentPack'
+import { getRelatedMedications, getTopicBySlug } from '../content/contentPack'
+import { useContentPack } from '../content/useContentPack'
 
 export function PatientTopicPage() {
+  const { contentPack } = useContentPack()
   const { slug = '' } = useParams()
-  const result = getTopicBySlug(slug)
+  const result = getTopicBySlug(contentPack, slug)
 
   if (!result) {
     return (
@@ -94,7 +96,7 @@ export function PatientTopicPage() {
             <article className="topic-card">
               <h2>相關藥物主題</h2>
               <div className="link-stack">
-                {getRelatedMedications(result.topic.relatedMedicationIds).map((medication) => (
+                {getRelatedMedications(contentPack, result.topic.relatedMedicationIds).map((medication) => (
                   <Link key={medication.id} to={`/patient/topic/${medication.slug}`} className="inline-link-card">
                     <strong>{medication.name}</strong>
                     <span>{medication.classLabel}</span>
