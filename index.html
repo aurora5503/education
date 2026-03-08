@@ -4,7 +4,26 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>education</title>
+    <title>精神科個人化衛教平台</title>
+    <script>
+      (function () {
+        var search = window.location.search
+        if (!search || search.indexOf('?/') !== 0) {
+          return
+        }
+
+        var decoded = search
+          .slice(2)
+          .split('&')
+          .map(function (segment) {
+            return segment.replace(/~and~/g, '&')
+          })
+          .join('?')
+
+        var target = window.location.pathname.replace(/\/$/, '') + decoded + window.location.hash
+        window.history.replaceState(null, '', target)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

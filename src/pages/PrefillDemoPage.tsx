@@ -13,7 +13,7 @@ const presets: Record<string, PrefillPayload> = {
       followUpPlan: '2 週後回診',
       emphasis: '規律服藥，若噁心加劇請提早聯絡',
     },
-    sourceSystem: 'EDGE-HIS-DEMO',
+    sourceSystem: 'EDGE-HIS',
   },
   insomniaAcute: {
     diagnosisIds: ['insomnia'],
@@ -24,7 +24,7 @@ const presets: Record<string, PrefillPayload> = {
       followUpPlan: '1 週後回診',
       emphasis: '白天避免補眠，晚上不要配酒服藥',
     },
-    sourceSystem: 'EDGE-HIS-DEMO',
+    sourceSystem: 'EDGE-HIS',
   },
   bipolarSupport: {
     diagnosisIds: ['bipolar'],
@@ -35,7 +35,7 @@ const presets: Record<string, PrefillPayload> = {
       followUpPlan: '1 到 2 週內追蹤抽血',
       emphasis: '若睡眠快速下降或情緒高漲，請提早就醫',
     },
-    sourceSystem: 'EDGE-HIS-DEMO',
+    sourceSystem: 'EDGE-HIS',
   },
 }
 
@@ -65,15 +65,15 @@ export function PrefillDemoPage() {
     <div className="page">
       <section className="page-hero">
         <div>
-          <p className="eyebrow">Integration Sandbox</p>
-          <h1>HIS 預填模擬器</h1>
+          <p className="eyebrow">系統預填</p>
+          <h1>HIS 預填設定</h1>
           <p className="hero-copy">
-            用同一份 payload 同時測試 query-string fallback 與 postMessage。這頁可當 Edge 宿主頁串接前的驗證沙盒。
+            用同一份 payload 設定 query-string fallback 與 postMessage，方便接入院內系統或嵌入式頁面。
           </p>
         </div>
         <div className="hero-card">
-          <span className="pill accent">同源 iframe 測試</span>
-          <span className="pill subtle">無個資、只測介面契約</span>
+          <span className="pill accent">同源 iframe 預填</span>
+          <span className="pill subtle">無個資、只傳欄位資料</span>
         </div>
       </section>
 
@@ -81,7 +81,7 @@ export function PrefillDemoPage() {
         <section className="panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Preset Payload</p>
+              <p className="eyebrow">預填資料</p>
               <h2>切換情境</h2>
             </div>
             <span className="panel-meta">{Object.keys(presets).length} 組示範資料</span>
@@ -112,7 +112,7 @@ export function PrefillDemoPage() {
 
           <div className="action-row">
             <button type="button" className="primary-button" onClick={sendMessage}>
-              發送 postMessage 到右側 composer
+              發送 postMessage 到右側醫師端
             </button>
             <a href={launchUrl} target="_blank" rel="noreferrer" className="ghost-link-button">
               用 query string 開新視窗
@@ -129,7 +129,7 @@ export function PrefillDemoPage() {
           <div className="contract-list">
             <h3>PrefillPayload</h3>
             <ul className="topic-list">
-              <li><code>diagnosisIds[]</code>：主診斷 ids，MVP 取第一個為主軸。</li>
+              <li><code>diagnosisIds[]</code>：主診斷 ids，目前取第一個為主軸。</li>
               <li><code>medicationIds[]</code>：要顯示在個人化藥物區塊的藥物類別。</li>
               <li><code>selectedModuleIds[]</code>：心理或生活模組 ids。</li>
               <li><code>visitContext</code>：照護階段、追蹤安排、強調重點。</li>
@@ -146,19 +146,19 @@ export function PrefillDemoPage() {
         <section className="panel iframe-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Live Target</p>
-              <h2>內嵌醫師端 composer</h2>
+              <p className="eyebrow">即時預覽</p>
+              <h2>內嵌醫師端頁面</h2>
             </div>
             <span className="panel-meta">/doctor/create</span>
           </div>
-          <iframe ref={iframeRef} title="Doctor composer demo" src="/doctor/create" className="demo-iframe" />
+          <iframe ref={iframeRef} title="Doctor page preview" src="/doctor/create" className="demo-iframe" />
         </section>
       </div>
 
       <section className="panel patient-topic-panel">
         <div className="panel-heading">
           <div>
-            <p className="eyebrow">Public Patient Topics</p>
+            <p className="eyebrow">病人端主題</p>
             <h2>病人端公開主題頁入口</h2>
           </div>
           <span className="panel-meta">供 QR code 延伸閱讀使用</span>

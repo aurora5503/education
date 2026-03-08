@@ -4,7 +4,6 @@ export interface DiagnosisTopic {
   id: string
   slug: TopicSlug
   name: string
-  accent: string
   coreSummary: string
   commonSymptoms: string[]
   courseExpectation: string

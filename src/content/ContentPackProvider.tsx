@@ -4,6 +4,12 @@ import { ContentPackContext, type ContentPackContextValue } from './ContentPackC
 import type { CareModule, ContentPack, DiagnosisTopic, MedicationFaq, MedicationTopic } from '../types/content'
 
 const STORAGE_KEY = 'psyedu.content-pack.v1'
+const getServerContentUrl = () => new URL('content/content-pack.json', window.location.origin + import.meta.env.BASE_URL).toString()
+
+interface StoredDraft {
+  baseHash: string
+  contentPack: ContentPack
+}
 
 const asRecord = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : null
@@ -58,7 +64,6 @@ const sanitizeDiagnosis = (value: unknown, fallback: DiagnosisTopic): DiagnosisT
     id,
     slug,
     name,
-    accent: asString(record.accent, fallback.accent),
     coreSummary: asString(record.coreSummary, fallback.coreSummary),
     commonSymptoms: asStringArray(record.commonSymptoms, fallback.commonSymptoms),
     courseExpectation: asString(record.courseExpectation, fallback.courseExpectation),
@@ -166,40 +171,110 @@ function sanitizeContentPack(candidate: unknown): ContentPack {
   }
 }
 
-function loadContentPack(): ContentPack {
+function hashContentPack(contentPack: ContentPack) {
+  return JSON.stringify(contentPack)
+}
+
+function loadStoredDraft(): StoredDraft | null {
   if (typeof window === 'undefined') {
-    return cloneContentPack(defaultContentPack)
+    return null
   }
 
   const raw = window.localStorage.getItem(STORAGE_KEY)
 
   if (!raw) {
-    return cloneContentPack(defaultContentPack)
+    return null
   }
 
   try {
-    return sanitizeContentPack(JSON.parse(raw))
+    const parsed = JSON.parse(raw) as Partial<StoredDraft>
+
+    if (!parsed || typeof parsed !== 'object' || typeof parsed.baseHash !== 'string') {
+      return null
+    }
+
+    return {
+      baseHash: parsed.baseHash,
+      contentPack: sanitizeContentPack(parsed.contentPack),
+    }
   } catch {
-    return cloneContentPack(defaultContentPack)
+    return null
   }
 }
 
 export function ContentPackProvider({ children }: { children: ReactNode }) {
-  const [contentPack, setContentPack] = useState<ContentPack>(() => loadContentPack())
+  const [serverContentPack, setServerContentPack] = useState<ContentPack>(() => cloneContentPack(defaultContentPack))
+  const [contentPack, setContentPack] = useState<ContentPack>(() => cloneContentPack(defaultContentPack))
+  const [hasHydrated, setHasHydrated] = useState(false)
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(contentPack))
-  }, [contentPack])
+    let cancelled = false
+
+    const hydrate = async () => {
+      let nextServerPack = cloneContentPack(defaultContentPack)
+
+      try {
+        const response = await fetch(getServerContentUrl(), { cache: 'no-store' })
+
+        if (response.ok) {
+          nextServerPack = sanitizeContentPack(await response.json())
+        }
+      } catch {
+        nextServerPack = cloneContentPack(defaultContentPack)
+      }
+
+      if (cancelled) {
+        return
+      }
+
+      const storedDraft = loadStoredDraft()
+      const serverHash = hashContentPack(nextServerPack)
+      const nextContentPack =
+        storedDraft && storedDraft.baseHash === serverHash ? storedDraft.contentPack : cloneContentPack(nextServerPack)
+
+      setServerContentPack(nextServerPack)
+      setContentPack(nextContentPack)
+      setHasHydrated(true)
+    }
+
+    void hydrate()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hasHydrated) {
+      return
+    }
+
+    const serverHash = hashContentPack(serverContentPack)
+    const currentHash = hashContentPack(contentPack)
+
+    if (serverHash === currentHash) {
+      window.localStorage.removeItem(STORAGE_KEY)
+      return
+    }
+
+    const payload: StoredDraft = {
+      baseHash: serverHash,
+      contentPack,
+    }
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+  }, [contentPack, hasHydrated, serverContentPack])
 
   const value = useMemo<ContentPackContextValue>(
     () => ({
       contentPack,
       updateContentPack: (updater) => setContentPack((current) => updater(current)),
-      restoreDefaults: () => setContentPack(cloneContentPack(defaultContentPack)),
+      importContentPack: (nextContentPack) => setContentPack(sanitizeContentPack(nextContentPack)),
+      restoreDefaults: () => setContentPack(cloneContentPack(serverContentPack)),
       exportContentPack: () => JSON.stringify(contentPack, null, 2),
-      hasLocalChanges: JSON.stringify(contentPack) !== JSON.stringify(defaultContentPack),
+      hasLocalChanges: hashContentPack(contentPack) !== hashContentPack(serverContentPack),
     }),
-    [contentPack],
+    [contentPack, serverContentPack],
   )
 
   return <ContentPackContext.Provider value={value}>{children}</ContentPackContext.Provider>

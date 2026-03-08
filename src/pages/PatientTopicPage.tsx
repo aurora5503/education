@@ -6,46 +6,90 @@ export function PatientTopicPage() {
   const { contentPack } = useContentPack()
   const { slug = '' } = useParams()
   const result = getTopicBySlug(contentPack, slug)
+  const relatedMedications =
+    result?.kind === 'diagnosis' ? getRelatedMedications(contentPack, result.topic.relatedMedicationIds) : []
+  const relatedDiagnoses =
+    result?.kind === 'medication'
+      ? contentPack.diagnoses.filter((diagnosis) => result.topic.relatedDiagnosisIds.includes(diagnosis.id))
+      : []
 
   if (!result) {
     return (
-      <div className="page">
-        <section className="page-hero">
+      <div className="page patient-page">
+        <section className="page-hero patient-hero">
           <div>
-            <p className="eyebrow">Patient Topic</p>
-            <h1>找不到對應主題</h1>
-            <p className="hero-copy">這個 QR code 可能已更新，請回到門診衛教單重新掃描，或直接回診確認。</p>
+            <p className="eyebrow">病人閱讀</p>
+            <h1>找不到這份衛教內容</h1>
+            <p className="hero-copy">這個 QR code 可能已更新，請回到門診衛教單重新掃描，或在下次回診時請醫師重新提供。</p>
           </div>
-          <Link to="/doctor/create" className="primary-link">
-            返回醫師端首頁
-          </Link>
+          <div className="hero-card patient-hero-card">
+            <span className="pill subtle">不顯示個資</span>
+            <span className="pill">請以最新衛教單為準</span>
+          </div>
         </section>
       </div>
     )
   }
 
   return (
-    <div className="page">
+    <div className="page patient-page">
       <section className="page-hero patient-hero">
         <div>
-          <p className="eyebrow">Patient Reading</p>
+          <p className="eyebrow">病人閱讀</p>
           <h1>{result.topic.name}</h1>
           <p className="hero-copy">
-            這是提供病人與家屬回家複習的一般衛教內容，不包含個別病人資料，也不能取代你的回診與醫囑。
+            這一頁只保留回家複習需要的衛教重點，不包含個別病人資料，也不能取代你的回診與醫囑。
           </p>
         </div>
-        <div className="hero-card">
-          <span className="pill subtle">公開簡版頁面</span>
+        <div className="hero-card patient-hero-card">
+          <span className="pill subtle">病人閱讀版</span>
           <span className="pill">不顯示個資</span>
+          <span className="pill subtle">建議回診前再複習一次</span>
         </div>
       </section>
 
       {result.kind === 'diagnosis' ? (
-        <div className="topic-layout">
+        <>
+          <section className="patient-summary-strip" aria-label="回家重點">
+            <article className="patient-summary-card">
+              <span className="patient-summary-label">回家先記得</span>
+              <ul className="patient-summary-list">
+                {result.topic.selfCareTips.slice(0, 3).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="patient-summary-card patient-summary-card-urgent">
+              <span className="patient-summary-label">這些情況請提早回診</span>
+              <ul className="patient-summary-list">
+                {result.topic.redFlags.slice(0, 3).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </section>
+
+          <div className="topic-layout">
           <section className="topic-main">
             <article className="topic-card">
               <h2>這是什麼</h2>
               <p>{result.topic.coreSummary}</p>
+            </article>
+            <article className="topic-card patient-priority-card">
+              <h2>回家後先做這些事</h2>
+              <ul className="topic-list">
+                {result.topic.selfCareTips.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="topic-card warning-card">
+              <h2>什麼情況要提早聯絡醫療團隊</h2>
+              <ul className="topic-list">
+                {result.topic.redFlags.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
             </article>
             <article className="topic-card">
               <h2>常見表現</h2>
@@ -66,14 +110,6 @@ export function PatientTopicPage() {
                 ))}
               </ul>
             </article>
-            <article className="topic-card warning-card">
-              <h2>什麼情況要提早聯絡醫療團隊</h2>
-              <ul className="topic-list">
-                {result.topic.redFlags.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
           </section>
 
           <aside className="topic-side">
@@ -86,32 +122,53 @@ export function PatientTopicPage() {
               </ul>
             </article>
             <article className="topic-card">
-              <h2>日常可先做到的事</h2>
-              <ul className="topic-list">
-                {result.topic.selfCareTips.map((item) => (
+              <h2>相關藥物主題</h2>
+              <div className="link-stack">
+                {relatedMedications.length > 0 ? (
+                  relatedMedications.map((medication) => (
+                    <Link key={medication.id} to={`/patient/topic/${medication.slug}`} className="inline-link-card">
+                      <strong>{medication.name}</strong>
+                      <span>{medication.classLabel}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <p>目前沒有延伸藥物主題。</p>
+                )}
+              </div>
+            </article>
+          </aside>
+          </div>
+        </>
+      ) : (
+        <>
+          <section className="patient-summary-strip" aria-label="服藥重點">
+            <article className="patient-summary-card">
+              <span className="patient-summary-label">服藥先記得</span>
+              <ul className="patient-summary-list">
+                <li>{result.topic.missedDoseAdvice}</li>
+                <li>{result.topic.discontinuationAdvice}</li>
+              </ul>
+            </article>
+            <article className="patient-summary-card patient-summary-card-urgent">
+              <span className="patient-summary-label">這些情況請回診確認</span>
+              <ul className="patient-summary-list">
+                {result.topic.whenToCall.slice(0, 3).map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </article>
-            <article className="topic-card">
-              <h2>相關藥物主題</h2>
-              <div className="link-stack">
-                {getRelatedMedications(contentPack, result.topic.relatedMedicationIds).map((medication) => (
-                  <Link key={medication.id} to={`/patient/topic/${medication.slug}`} className="inline-link-card">
-                    <strong>{medication.name}</strong>
-                    <span>{medication.classLabel}</span>
-                  </Link>
-                ))}
-              </div>
-            </article>
-          </aside>
-        </div>
-      ) : (
-        <div className="topic-layout">
+          </section>
+
+          <div className="topic-layout">
           <section className="topic-main">
             <article className="topic-card">
               <h2>這類藥物通常在做什麼</h2>
               <p>{result.topic.patientIntro}</p>
+            </article>
+            <article className="topic-card warning-card">
+              <h2>漏藥或停藥提醒</h2>
+              <p>{result.topic.missedDoseAdvice}</p>
+              <p>{result.topic.discontinuationAdvice}</p>
             </article>
             <article className="topic-card">
               <h2>常見用途</h2>
@@ -145,11 +202,6 @@ export function PatientTopicPage() {
                 </div>
               </div>
             </article>
-            <article className="topic-card warning-card">
-              <h2>漏藥或停藥提醒</h2>
-              <p>{result.topic.missedDoseAdvice}</p>
-              <p>{result.topic.discontinuationAdvice}</p>
-            </article>
           </section>
 
           <aside className="topic-side">
@@ -175,18 +227,21 @@ export function PatientTopicPage() {
             <article className="topic-card">
               <h2>回到主題入口</h2>
               <div className="link-stack">
-                {contentPack.diagnoses
-                  .filter((diagnosis) => result.topic.relatedDiagnosisIds.includes(diagnosis.id))
-                  .map((diagnosis) => (
+                {relatedDiagnoses.length > 0 ? (
+                  relatedDiagnoses.map((diagnosis) => (
                     <Link key={diagnosis.id} to={`/patient/topic/${diagnosis.slug}`} className="inline-link-card">
                       <strong>{diagnosis.name}</strong>
                       <span>{diagnosis.coreSummary}</span>
                     </Link>
-                  ))}
+                  ))
+                ) : (
+                  <p>目前沒有其他主題可返回。</p>
+                )}
               </div>
             </article>
           </aside>
-        </div>
+          </div>
+        </>
       )}
     </div>
   )

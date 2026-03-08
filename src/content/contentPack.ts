@@ -5,7 +5,6 @@ const diagnoses: DiagnosisTopic[] = [
     id: 'depression',
     slug: 'major-depression',
     name: '憂鬱症',
-    accent: '晨光珊瑚',
     coreSummary:
       '憂鬱症不只是心情不好，而是情緒、睡眠、專注力與身體能量一起受到影響的疾病，通常需要連續幾週到數月的規律治療。',
     commonSymptoms: ['情緒低落', '興趣下降', '睡眠改變', '食慾波動', '疲倦與注意力下降'],
@@ -22,7 +21,6 @@ const diagnoses: DiagnosisTopic[] = [
     id: 'anxiety',
     slug: 'anxiety-disorder',
     name: '焦慮症',
-    accent: '湖水青',
     coreSummary:
       '焦慮症會讓大腦長時間處於警覺模式，常表現為坐立不安、胸悶、心悸、反覆擔心與難以放鬆。',
     commonSymptoms: ['過度擔心', '心悸胸悶', '肌肉緊繃', '腸胃不適', '睡眠淺與易醒'],
@@ -39,7 +37,6 @@ const diagnoses: DiagnosisTopic[] = [
     id: 'insomnia',
     slug: 'insomnia',
     name: '失眠症',
-    accent: '月白金',
     coreSummary:
       '失眠常與壓力、作息混亂、焦慮憂鬱或生理節律失衡有關，重點不是只靠安眠藥入睡，而是重建穩定睡眠訊號。',
     commonSymptoms: ['入睡困難', '夜間易醒', '太早醒', '白天疲倦', '對睡眠過度焦慮'],
@@ -56,7 +53,6 @@ const diagnoses: DiagnosisTopic[] = [
     id: 'bipolar',
     slug: 'bipolar-disorder',
     name: '雙相情緒障礙',
-    accent: '琥珀橙',
     coreSummary:
       '雙相情緒障礙會在憂鬱期與躁期或輕躁期之間波動，治療重點是穩定情緒週期，避免只治單一階段而忽略整體病程。',
     commonSymptoms: ['情緒起伏大', '睡眠需求下降', '衝動消費', '語速變快', '憂鬱與倦怠期交替'],
@@ -73,7 +69,6 @@ const diagnoses: DiagnosisTopic[] = [
     id: 'schizophrenia',
     slug: 'schizophrenia-spectrum',
     name: '思覺失調症',
-    accent: '岩藍灰',
     coreSummary:
       '思覺失調症會影響感知、思考與現實感，治療的目標是降低復發、維持功能，並讓病人與家屬更早辨識警訊。',
     commonSymptoms: ['幻聽', '妄想', '思考跳躍', '動機下降', '社交退縮'],
@@ -90,7 +85,6 @@ const diagnoses: DiagnosisTopic[] = [
     id: 'adhd',
     slug: 'adhd',
     name: 'ADHD',
-    accent: '新芽綠',
     coreSummary:
       'ADHD 會影響注意力、衝動控制與時間管理，治療不是要把個性改掉，而是幫助病人更穩定地發揮功能。',
     commonSymptoms: ['容易分心', '拖延', '衝動插話', '忘東忘西', '任務切換困難'],

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>education</title>
+    <script>
+      (function () {
+        var pathSegmentsToKeep = window.location.hostname.endsWith('github.io') ? 1 : 0
+        var locationPath = window.location.pathname.split('/').slice(1)
+        var basePath = location.origin + '/' + locationPath.slice(0, pathSegmentsToKeep).join('/')
+        var routePath = locationPath.slice(pathSegmentsToKeep).join('/')
+        var search = window.location.search
+          ? '&' + window.location.search.slice(1).replace(/&/g, '~and~')
+          : ''
+        var target = basePath + '/?/' + routePath + search + window.location.hash
+
+        window.location.replace(target)
+      })()
+    </script>
+  </head>
+  <body></body>
+</html>

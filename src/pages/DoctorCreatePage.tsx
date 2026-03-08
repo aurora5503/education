@@ -117,7 +117,7 @@ export function DoctorCreatePage() {
     <div className="page">
       <section className="page-hero">
         <div>
-          <p className="eyebrow">Doctor Composer</p>
+          <p className="eyebrow">衛教建立</p>
           <h1>精神科個人化衛教單</h1>
           <p className="hero-copy">
             用單頁流程快速組出門診後衛教單。診斷、藥物副作用、心理與生活建議都會即時整合成 A4 列印版。
@@ -163,20 +163,12 @@ export function DoctorCreatePage() {
                   <button
                     key={diagnosis.id}
                     type="button"
-                    className={`selection-card diagnosis-card ${isActive ? 'active' : ''}`}
+                    className={`selection-card diagnosis-card compact-selection-card ${isActive ? 'active' : ''}`}
                     onClick={() => setSelectedDiagnosisId(diagnosis.id)}
                   >
                     <div className="selection-header">
                       <strong>{diagnosis.name}</strong>
-                      <span className="pill subtle">{diagnosis.accent}</span>
-                    </div>
-                    <p>{diagnosis.coreSummary}</p>
-                    <div className="chip-row">
-                      {diagnosis.commonSymptoms.slice(0, 3).map((symptom) => (
-                        <span key={symptom} className="chip">
-                          {symptom}
-                        </span>
-                      ))}
+                      {isActive ? <span className="pill accent">已選取</span> : null}
                     </div>
                   </button>
                 )
@@ -201,21 +193,15 @@ export function DoctorCreatePage() {
                   <button
                     key={medication.id}
                     type="button"
-                    className={`selection-card ${isActive ? 'active' : ''}`}
+                    className={`selection-card compact-selection-card ${isActive ? 'active' : ''}`}
                     onClick={() => toggleSelection(selectedMedicationIds, medication.id, setSelectedMedicationIds)}
                   >
                     <div className="selection-header">
                       <strong>{medication.name}</strong>
-                      {isRecommended ? <span className="pill accent">建議</span> : null}
-                    </div>
-                    <p>{medication.patientIntro}</p>
-                    <p className="selection-footnote">起效時間：{medication.onset}</p>
-                    <div className="chip-row">
-                      {medication.commonSideEffects.slice(0, 3).map((effect) => (
-                        <span key={effect} className="chip warn">
-                          {effect}
-                        </span>
-                      ))}
+                      <div className="chip-row">
+                        {isRecommended ? <span className="pill accent">建議</span> : null}
+                        {isActive ? <span className="pill subtle">已選取</span> : null}
+                      </div>
                     </div>
                   </button>
                 )
@@ -322,7 +308,7 @@ export function DoctorCreatePage() {
               />
             </label>
 
-            <div className="action-row">
+            <div className="action-row panel-action-row">
               <button type="button" className="primary-button" onClick={() => window.print()} disabled={!document}>
                 列印 / 輸出 PDF
               </button>

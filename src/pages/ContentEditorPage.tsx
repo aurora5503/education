@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useContentPack } from '../content/useContentPack'
+import type { ContentPack } from '../types/content'
 import type { CareModule, DiagnosisTopic, MedicationTopic } from '../types/content'
 
 type EditorSection = 'diagnoses' | 'medications' | 'modules'
@@ -52,12 +53,14 @@ const toggleRelatedId = (current: string[], id: string) =>
   current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
 
 export function ContentEditorPage() {
-  const { contentPack, updateContentPack, restoreDefaults, exportContentPack, hasLocalChanges } = useContentPack()
+  const { contentPack, updateContentPack, importContentPack, restoreDefaults, exportContentPack, hasLocalChanges } =
+    useContentPack()
   const [section, setSection] = useState<EditorSection>('diagnoses')
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(contentPack.diagnoses[0]?.id ?? '')
   const [selectedMedicationId, setSelectedMedicationId] = useState(contentPack.medications[0]?.id ?? '')
   const [selectedModuleId, setSelectedModuleId] = useState(contentPack.modules[0]?.id ?? '')
   const [copyStatus, setCopyStatus] = useState('尚未匯出')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const activeDiagnosisId = contentPack.diagnoses.some((item) => item.id === selectedDiagnosisId)
     ? selectedDiagnosisId
@@ -116,6 +119,49 @@ export function ContentEditorPage() {
     }
   }
 
+  const downloadJson = () => {
+    const blob = new Blob([exportContentPack()], { type: 'application/json;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const stamp = new Date().toISOString().slice(0, 10)
+
+    link.href = url
+    link.download = `psyedu-content-${stamp}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    setCopyStatus('JSON 檔已下載')
+  }
+
+  const openImportPicker = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    const confirmed = window.confirm('匯入 JSON 會覆蓋目前這台電腦上的自訂內容，是否繼續？')
+
+    if (!confirmed) {
+      event.target.value = ''
+      return
+    }
+
+    try {
+      const raw = await file.text()
+      const parsed = JSON.parse(raw) as ContentPack
+      importContentPack(parsed)
+      setCopyStatus(`已匯入 ${file.name}`)
+    } catch {
+      setCopyStatus('匯入失敗，請確認檔案是正確的 JSON')
+    } finally {
+      event.target.value = ''
+    }
+  }
+
   const addDiagnosis = () => {
     const id = createId('diagnosis')
     const slug = createUniqueSlug(
@@ -126,7 +172,6 @@ export function ContentEditorPage() {
       id,
       slug,
       name: `新疾病主題 ${contentPack.diagnoses.length + 1}`,
-      accent: '自訂主題',
       coreSummary: '請填入這個疾病主題的核心說明。',
       commonSymptoms: ['請填入常見症狀'],
       courseExpectation: '請填入病程與治療期待。',
@@ -263,18 +308,18 @@ export function ContentEditorPage() {
     <div className="page">
       <section className="page-hero editor-hero">
         <div>
-          <p className="eyebrow">Single-Doctor Editing Mode</p>
+          <p className="eyebrow">內容管理</p>
           <h1>把現成衛教內容改成你自己的版本</h1>
           <p className="hero-copy">
-            這頁直接在瀏覽器裡編輯症況、藥物與衛教文字。每次修改都會自動存到這台電腦的 localStorage，不需要後端。
+            這頁會先讀伺服器上的 JSON 當全站基準內容，再把你這台電腦的修改當成本機暫存。要正式部署時，只要更新伺服器 JSON。
           </p>
         </div>
         <div className="hero-card editor-status-card">
           <span className={`pill ${hasLocalChanges ? 'accent' : 'subtle'}`}>
-            {hasLocalChanges ? '已有自訂版本' : '目前仍是預設版本'}
+            {hasLocalChanges ? '目前有本機暫存版本' : '目前與伺服器版本一致'}
           </span>
           <span className="pill subtle">單一使用者</span>
-          <span className="pill subtle">本機自動儲存</span>
+          <span className="pill subtle">伺服器 JSON 優先</span>
         </div>
       </section>
 
@@ -282,14 +327,27 @@ export function ContentEditorPage() {
         <article className="topic-card">
           <p className="eyebrow">目前資料</p>
           <h2>{contentPack.diagnoses.length} 個症況主題</h2>
-          <p>會同步影響醫師端 composer、列印預覽與病人端主題頁。</p>
+          <p>會同步影響醫師端建立頁、列印預覽與病人端主題頁。</p>
         </article>
         <article className="topic-card">
           <p className="eyebrow">快速操作</p>
           <div className="action-row">
-            <button type="button" className="primary-button" onClick={copyJson}>
-              複製目前 JSON
+            <button type="button" className="primary-button" onClick={downloadJson}>
+              下載 JSON
             </button>
+            <button type="button" className="ghost-button" onClick={openImportPicker}>
+              匯入 JSON
+            </button>
+            <button type="button" className="ghost-button" onClick={copyJson}>
+              複製 JSON
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="sr-only"
+              onChange={handleImportFile}
+            />
             <button type="button" className="ghost-button" onClick={restoreDefaults}>
               還原預設內容
             </button>
@@ -315,7 +373,7 @@ export function ContentEditorPage() {
         <section className="panel editor-sidebar">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Editable Sections</p>
+              <p className="eyebrow">編輯區域</p>
               <h2>選一個編輯區</h2>
             </div>
           </div>
@@ -405,7 +463,7 @@ export function ContentEditorPage() {
             <div className="editor-form-stack">
               <div className="panel-heading">
                 <div>
-                  <p className="eyebrow">Diagnosis Topic</p>
+                  <p className="eyebrow">疾病主題</p>
                   <h2>{currentDiagnosis.name}</h2>
                 </div>
                 <div className="editor-heading-actions">
@@ -423,15 +481,6 @@ export function ContentEditorPage() {
                     value={currentDiagnosis.name}
                     onChange={(event) =>
                       updateDiagnosis(currentDiagnosis.id, (item) => ({ ...item, name: event.target.value }))
-                    }
-                  />
-                </label>
-                <label className="field">
-                  <span>色彩標記</span>
-                  <input
-                    value={currentDiagnosis.accent}
-                    onChange={(event) =>
-                      updateDiagnosis(currentDiagnosis.id, (item) => ({ ...item, accent: event.target.value }))
                     }
                   />
                 </label>
@@ -614,7 +663,7 @@ export function ContentEditorPage() {
             <div className="editor-form-stack">
               <div className="panel-heading">
                 <div>
-                  <p className="eyebrow">Medication Topic</p>
+                  <p className="eyebrow">藥物主題</p>
                   <h2>{currentMedication.name}</h2>
                 </div>
                 <div className="editor-heading-actions">
@@ -830,7 +879,7 @@ export function ContentEditorPage() {
             <div className="editor-form-stack">
               <div className="panel-heading">
                 <div>
-                  <p className="eyebrow">Care Module</p>
+                  <p className="eyebrow">衛教模組</p>
                   <h2>{currentModule.title}</h2>
                 </div>
                 <div className="editor-heading-actions">

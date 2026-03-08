@@ -18,7 +18,8 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
     )
   }
 
-  const qrValue = new URL(document.qrPath, window.location.origin).toString()
+  const appBaseUrl = new URL(import.meta.env.BASE_URL, window.location.origin)
+  const qrValue = new URL(document.qrPath.replace(/^\//, ''), appBaseUrl).toString()
 
   return (
     <section className="preview-shell">
@@ -33,13 +34,11 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
       <article className="preview-paper" aria-label="個人化衛教單列印預覽">
         <header className="paper-header">
           <div>
-            <p className="paper-kicker">Psychiatry Education MVP</p>
             <h1>{document.title}</h1>
             {document.visitContextLine ? <p className="paper-context">{document.visitContextLine}</p> : null}
           </div>
           <div className="paper-meta">
             <span>{document.generatedAt}</span>
-            {document.sourceSystem ? <span>來源：{document.sourceSystem}</span> : null}
           </div>
         </header>
 
