@@ -240,13 +240,6 @@ export function DoctorCreatePage() {
                             {isRecommended ? <span className="pill accent">建議</span> : null}
                           </div>
                           <p>{module.summary}</p>
-                          <div className="chip-row">
-                            {module.tags.map((tag) => (
-                              <span key={tag} className="chip">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
                         </button>
                       )
                     })}

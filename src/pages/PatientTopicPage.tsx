@@ -165,11 +165,6 @@ export function PatientTopicPage() {
               <h2>這類藥物通常在做什麼</h2>
               <p>{result.topic.patientIntro}</p>
             </article>
-            <article className="topic-card warning-card">
-              <h2>漏藥或停藥提醒</h2>
-              <p>{result.topic.missedDoseAdvice}</p>
-              <p>{result.topic.discontinuationAdvice}</p>
-            </article>
             <article className="topic-card">
               <h2>常見用途</h2>
               <div className="topic-chip-grid">
@@ -205,14 +200,6 @@ export function PatientTopicPage() {
           </section>
 
           <aside className="topic-side">
-            <article className="topic-card">
-              <h2>什麼時候要回診確認</h2>
-              <ul className="topic-list">
-                {result.topic.whenToCall.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
             <article className="topic-card">
               <h2>病人常問</h2>
               <div className="faq-stack">

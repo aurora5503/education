@@ -230,7 +230,6 @@ export function ContentEditorPage() {
       title: `新衛教模組 ${contentPack.modules.length + 1}`,
       summary: '請填入這個模組想傳達的摘要。',
       bullets: ['請填入一個重點'],
-      tags: ['自訂模組'],
     }
 
     updateContentPack((current) => ({
@@ -928,28 +927,16 @@ export function ContentEditorPage() {
                 />
               </label>
 
-              <div className="field-grid">
-                <label className="field">
-                  <span>重點條列</span>
-                  <textarea
-                    rows={7}
-                    value={listToText(currentModule.bullets)}
-                    onChange={(event) =>
-                      updateModule(currentModule.id, (item) => ({ ...item, bullets: textToList(event.target.value) }))
-                    }
-                  />
-                </label>
-                <label className="field">
-                  <span>標籤</span>
-                  <textarea
-                    rows={7}
-                    value={listToText(currentModule.tags)}
-                    onChange={(event) =>
-                      updateModule(currentModule.id, (item) => ({ ...item, tags: textToList(event.target.value) }))
-                    }
-                  />
-                </label>
-              </div>
+              <label className="field">
+                <span>重點條列</span>
+                <textarea
+                  rows={7}
+                  value={listToText(currentModule.bullets)}
+                  onChange={(event) =>
+                    updateModule(currentModule.id, (item) => ({ ...item, bullets: textToList(event.target.value) }))
+                  }
+                />
+              </label>
             </div>
           ) : null}
         </section>

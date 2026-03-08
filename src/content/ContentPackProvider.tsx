@@ -129,7 +129,6 @@ const sanitizeModule = (value: unknown, fallback: CareModule): CareModule | null
     title,
     summary: asString(record.summary, fallback.summary),
     bullets: asStringArray(record.bullets, fallback.bullets),
-    tags: asStringArray(record.tags, fallback.tags),
   }
 }
 

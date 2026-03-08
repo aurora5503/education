@@ -43,7 +43,6 @@ export interface CareModule {
   title: string
   summary: string
   bullets: string[]
-  tags: string[]
 }
 
 export interface HandoutTemplate {
