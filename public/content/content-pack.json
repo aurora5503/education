@@ -43,7 +43,10 @@
         "activity-activation",
         "sleep-rhythm",
         "therapy-engagement",
-        "medication-adherence"
+        "medication-adherence",
+        "exercise-activation",
+        "emotion-recognition",
+        "social-support"
       ]
     },
     {
@@ -89,7 +92,9 @@
         "panic-grounding",
         "stress-regulation",
         "therapy-engagement",
-        "substance-reduction"
+        "substance-reduction",
+        "exercise-activation",
+        "emotion-recognition"
       ]
     },
     {
@@ -135,7 +140,8 @@
         "sleep-rhythm",
         "stress-regulation",
         "substance-reduction",
-        "screen-boundaries"
+        "screen-boundaries",
+        "exercise-activation"
       ]
     },
     {
@@ -183,7 +189,10 @@
         "relapse-signatures",
         "sleep-rhythm",
         "family-communication",
-        "medication-adherence"
+        "medication-adherence",
+        "exercise-activation",
+        "emotion-recognition",
+        "social-support"
       ]
     },
     {
@@ -228,7 +237,10 @@
         "family-communication",
         "medication-adherence",
         "relapse-signatures",
-        "return-to-work"
+        "return-to-work",
+        "exercise-activation",
+        "emotion-recognition",
+        "social-support"
       ]
     },
     {
@@ -273,7 +285,9 @@
         "task-structuring",
         "return-to-work",
         "sleep-rhythm",
-        "therapy-engagement"
+        "therapy-engagement",
+        "exercise-activation",
+        "emotion-recognition"
       ]
     }
   ],
@@ -1342,6 +1356,60 @@
         "先選一個固定的「下線時間」，到點就停止回工作訊息與滑短影音",
         "把手機充電位置移出床邊，減少半夜反射性拿起來",
         "睡前改做重複、低刺激的活動，例如泡澡、拉筋、紙本閱讀或整理明天待辦"
+      ]
+    },
+    {
+      "id": "exercise-activation",
+      "slug": "module-exercise-activation",
+      "kind": "lifestyle",
+      "title": "運動與身體活動",
+      "summary": "醫師端只看每天可做到的活動量、搭配時段與降低門檻的策略。",
+      "patientSummary": "運動對情緒、專注、睡眠和焦慮都有直接幫助，但重點不是逼自己去健身房，而是找到一個現在就做得到、可以持續的活動量。",
+      "bullets": [
+        "任何讓身體動起來的活動都算，不需要等到有計畫才開始",
+        "規律比強度更重要",
+        "搭在現有的日常節奏上，比另外排時間更容易維持"
+      ],
+      "practicalSteps": [
+        "先從每天 10 到 15 分鐘走路開始，不需要特別換運動服或去健身房",
+        "選一個固定時段搭配現有習慣，例如飯後、出門前或傍晚",
+        "若某天完全做不到，先做 5 分鐘也算，重點是不要讓中斷變成停止的理由"
+      ]
+    },
+    {
+      "id": "emotion-recognition",
+      "slug": "module-emotion-recognition",
+      "kind": "counseling",
+      "title": "情緒辨識與表達",
+      "summary": "醫師端只看命名情緒、區分身體感受與想法、以及適當表達的基本步驟。",
+      "patientSummary": "很多人在情緒很糟的時候，說不出自己到底感覺什麼，只知道很不舒服。學會辨識和說出情緒，不是為了分析自己，而是讓你和醫師、家人更容易溝通，也更能找到對的介入點。",
+      "bullets": [
+        "先辨識再行動，比被情緒直接帶著走更有選擇空間",
+        "身體感受常是情緒的早期訊號",
+        "說出情緒不等於發洩，是給自己和旁人一個處理的入口"
+      ],
+      "practicalSteps": [
+        "情緒衝上來時先問自己：我現在身體有什麼感覺？胸口緊、肩膀僵、還是胃不舒服",
+        "試著用比「很不爽」更精確的詞描述：是委屈、是煩躁、是害怕、還是失望",
+        "回診前把最近最強的一個情緒寫下來，加上觸發的事情和當時的身體感受，帶去和醫師討論"
+      ]
+    },
+    {
+      "id": "social-support",
+      "slug": "module-social-support",
+      "kind": "counseling",
+      "title": "人際支持與社交維持",
+      "summary": "醫師端只看維持一個穩定聯絡對象、低門檻接觸與避免完全退縮。",
+      "patientSummary": "生病的時候很容易覺得麻煩別人、不想見人，但完全退縮會讓情緒和功能一起更難恢復。重點不是要你馬上恢復社交，而是先維持一兩個讓你覺得安全的聯繫。",
+      "bullets": [
+        "不需要向所有人解釋，先維持一兩個知道你狀況的人就夠",
+        "低門檻的接觸比沒有接觸好，例如傳一則訊息也算",
+        "退縮常是症狀的一部分，不是你不想好"
+      ],
+      "practicalSteps": [
+        "先選出一個你覺得最安全的聯絡對象，不一定要說很多，讓對方知道你最近狀況就好",
+        "把接觸門檻降到最低：傳一則訊息、回一個貼圖、打一通 5 分鐘的電話都算",
+        "若想恢復社交但不知道怎麼開口，可以先和醫師或治療師練習要怎麼說"
       ]
     }
   ],

@@ -149,7 +149,6 @@ export function DoctorCreatePage() {
                         </div>
                       ) : null}
                     </div>
-                    <p className="selection-footnote">{diagnosis.coreSummary}</p>
                   </button>
                 )
               })}
@@ -176,7 +175,7 @@ export function DoctorCreatePage() {
                     type="button"
                     role="radio"
                     aria-checked={isActive}
-                    className={`selection-card medication-group-card ${isActive ? 'active' : ''}`}
+                    className={`selection-card medication-group-card compact-selection-card ${isActive ? 'active' : ''}`}
                     onClick={() => setSelectedMedicationGroupId(group.id)}
                   >
                     <div className="selection-header">
@@ -186,8 +185,6 @@ export function DoctorCreatePage() {
                         {isActive ? <span className="pill subtle">目前展開</span> : null}
                       </div>
                     </div>
-                    <p>{group.description}</p>
-                    <span className="selection-footnote">共 {group.items.length} 個細項</span>
                   </button>
                 )
               })}
@@ -215,7 +212,7 @@ export function DoctorCreatePage() {
                         type="button"
                         aria-pressed={isActive}
                         disabled={!isActive && selectedMedicationIds.length >= 2}
-                        className={`selection-card medication-detail-card ${isActive ? 'active' : ''}`}
+                        className={`selection-card medication-detail-card compact-selection-card ${isActive ? 'active' : ''}`}
                         onClick={() => toggleSelection(selectedMedicationIds, medication.id, setSelectedMedicationIds, 2)}
                       >
                         <div className="selection-header">
@@ -225,8 +222,6 @@ export function DoctorCreatePage() {
                             {isActive ? <span className="pill subtle">已選取</span> : null}
                           </div>
                         </div>
-                        <p className="selection-footnote">{medication.classLabel}</p>
-                        <p>{medication.shortSummary}</p>
                       </button>
                     )
                   })}

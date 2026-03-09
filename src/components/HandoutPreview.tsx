@@ -12,7 +12,7 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
         <p className="eyebrow">A4 預覽</p>
         <h2>選擇一個診斷後，這裡會即時生成門診衛教單。</h2>
         <p>
-          預覽會依據診斷、藥物與勾選模組自動更新，列印時只保留右側紙張內容，不會保存任何病人資料。
+          預覽會依據診斷、藥物與勾選模組自動更新，列印時只保留右側紙張內容。
         </p>
       </section>
     )
@@ -32,35 +32,41 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
     diagnosis: (
       <section key="diagnosis" className="paper-section">
         <div className="paper-section-title">診斷摘要</div>
-        <div className="paper-callout">
-          <strong>{document.diagnosis.name}</strong>
-          <p>{document.diagnosis.coreSummary}</p>
+        <div className="paper-diagnosis-card">
+          <div className="paper-callout">
+            <strong>{document.diagnosis.name}</strong>
+            <p>{document.diagnosis.coreSummary}</p>
+          </div>
+          <div className="paper-symptom-grid" aria-label="常見表現">
+            {document.diagnosis.commonSymptoms.slice(0, 4).map((item) => (
+              <span key={item} className="paper-chip">
+                {item}
+              </span>
+            ))}
+          </div>
+          <p className="paper-support-note">{document.diagnosis.courseExpectation}</p>
         </div>
-        <div className="chip-row">
-          {document.diagnosis.commonSymptoms.slice(0, 4).map((item) => (
-            <span key={item} className="chip">
-              {item}
-            </span>
-          ))}
-        </div>
-        <p className="paper-note">{document.diagnosis.courseExpectation}</p>
       </section>
     ),
     treatment: (
       <section key="treatment" className="paper-section">
         <div className="paper-section-title">目前治療方向</div>
-        <ul className="paper-list">
-          {document.treatmentSummary.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <div className="paper-info-card">
+          <ul className="paper-list">
+            {document.treatmentSummary.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
       </section>
     ),
     medication: (
       <section key="medication" className="paper-section">
         <div className="paper-section-title">藥物重點</div>
         {document.medications.length === 0 ? (
-          <p className="paper-note">本次未勾選藥物類別，可先用 QR code 讓病人回看完整主題頁。</p>
+          <div className="paper-info-card">
+            <p className="paper-note">本次未勾選藥物類別，可先用 QR code 讓病人回看完整主題頁。</p>
+          </div>
         ) : (
           <div className="medication-grid">
             {document.medications.map((medication) => (
@@ -96,7 +102,9 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
       <section key="modules" className="paper-section">
         <div className="paper-section-title">心理與生活建議</div>
         {document.modules.length === 0 ? (
-          <p className="paper-note">本次未加入額外模組，可依病人需求補充睡眠、壓力或復學復工提醒。</p>
+          <div className="paper-info-card">
+            <p className="paper-note">本次未加入額外模組，可依病人需求補充睡眠、壓力或復學復工提醒。</p>
+          </div>
         ) : (
           <div className="module-list">
             {document.modules.map((module) => (
@@ -120,11 +128,13 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
     urgent: (
       <section key="urgent" className="paper-section urgent-section">
         <div className="paper-section-title">何時盡快回診</div>
-        <ul className="paper-list">
-          {document.urgentFlags.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <div className="paper-info-card">
+          <ul className="paper-list">
+            {document.urgentFlags.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
       </section>
     ),
     qr: (
@@ -132,7 +142,7 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
         <div>
           <div className="paper-section-title">延伸閱讀</div>
           <p className="paper-note">
-            掃描 QR code 可查看不含個資的主題頁，回家後仍可複習診斷、藥物細項與心理生活模組。
+            掃描 QR code 可查看主題頁，回家後仍可複習診斷、藥物細項與心理生活模組。
           </p>
           {document.note ? <p className="handout-note">本次請特別注意：{document.note}</p> : null}
         </div>

@@ -600,10 +600,68 @@ button {
   gap: 10px;
 }
 
+.paper-diagnosis-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(35, 50, 55, 0.08);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(247, 251, 249, 0.92));
+}
+
+.paper-info-card {
+  padding: 14px;
+  border: 1px solid rgba(35, 50, 55, 0.08);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(249, 252, 250, 0.94));
+}
+
 .paper-callout {
   padding: 14px 16px;
   border-radius: 16px;
   background: linear-gradient(135deg, rgba(255, 239, 223, 0.72), rgba(245, 252, 249, 0.88));
+  border-left: 4px solid rgba(11, 122, 104, 0.5);
+}
+
+.paper-callout strong {
+  display: block;
+  margin-bottom: 6px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.12rem;
+}
+
+.paper-callout p {
+  margin: 0;
+  line-height: 1.58;
+}
+
+.paper-symptom-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.paper-chip {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 32px;
+  padding: 7px 10px;
+  border: 1px solid rgba(35, 50, 55, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.paper-support-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(35, 50, 55, 0.04);
+  color: var(--muted);
+  line-height: 1.58;
 }
 
 .paper-list,
@@ -636,14 +694,16 @@ button {
   padding: 14px;
   border-radius: 18px;
   border: 1px solid rgba(35, 50, 55, 0.08);
-  background: rgba(255, 255, 255, 0.88);
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(249, 252, 250, 0.94));
 }
 
 .medication-card header {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 8px;
+  gap: 3px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(35, 50, 55, 0.08);
 }
 
 .medication-card p,
@@ -652,6 +712,18 @@ button {
 .handout-note {
   margin: 0;
   font-size: 0.88rem;
+}
+
+.module-card strong,
+.medication-card strong {
+  display: block;
+  font-family: 'Noto Serif TC', serif;
+}
+
+.module-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .medication-alert,
@@ -862,6 +934,84 @@ button {
   gap: 20px;
 }
 
+.editor-summary-card {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.editor-summary-card-stats {
+  background:
+    radial-gradient(circle at top right, rgba(11, 122, 104, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(252, 247, 241, 0.96));
+}
+
+.editor-summary-card-preview {
+  background:
+    radial-gradient(circle at top left, rgba(215, 118, 79, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 252, 249, 0.96));
+}
+
+.editor-stat-board {
+  display: grid;
+  gap: 12px;
+}
+
+.editor-stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(35, 50, 55, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.editor-stat-number {
+  min-width: 2ch;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.editor-stat-label {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.26rem;
+}
+
+.editor-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.editor-action-grid .primary-button,
+.editor-action-grid .ghost-button,
+.editor-preview-stack .ghost-link-button {
+  width: 100%;
+}
+
+.editor-action-wide {
+  grid-column: 1 / -1;
+}
+
+.editor-preview-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.editor-summary-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+.editor-summary-note-warn {
+  color: var(--accent-2);
+}
+
 .editor-layout {
   display: grid;
   grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
@@ -891,16 +1041,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.editor-count-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.editor-count-stack h2 {
-  margin: 0;
 }
 
 .editor-item-button {
@@ -1164,6 +1304,35 @@ button {
     background: white;
   }
 
+  .paper-diagnosis-card,
+  .paper-info-card,
+  .paper-callout,
+  .paper-support-note,
+  .paper-chip {
+    background: white;
+  }
+
+  .paper-diagnosis-card,
+  .paper-info-card {
+    border: 1px solid rgba(35, 50, 55, 0.14);
+  }
+
+  .paper-callout {
+    border: 1px solid rgba(35, 50, 55, 0.12);
+    border-left: 4px solid rgba(35, 50, 55, 0.5);
+  }
+
+  .paper-symptom-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .paper-chip {
+    min-height: 28px;
+    padding: 5px 8px;
+    font-size: 0.8rem;
+  }
+
   .medication-card,
   .module-card,
   .qr-card,
@@ -1171,5 +1340,11 @@ button {
     break-inside: avoid;
     background: white;
     box-shadow: none;
+  }
+
+  .medication-card,
+  .module-card,
+  .qr-card {
+    border: 1px solid rgba(35, 50, 55, 0.14);
   }
 }

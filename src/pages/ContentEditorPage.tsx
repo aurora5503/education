@@ -342,18 +342,29 @@ export function ContentEditorPage() {
       </section>
 
       <section className="editor-summary-grid">
-        <article className="topic-card">
+        <article className="topic-card editor-summary-card editor-summary-card-stats">
           <p className="eyebrow">目前資料</p>
-          <div className="editor-count-stack">
-            <h2>{contentPack.diagnoses.length} 個症況主題</h2>
-            <h2>{contentPack.medications.length} 個藥物主題</h2>
-            <h2>{contentPack.modules.length} 個衛教模組</h2>
+          <div className="editor-stat-board">
+            <div className="editor-stat-row">
+              <span className="editor-stat-number">{contentPack.diagnoses.length}</span>
+              <span className="editor-stat-label">症況主題</span>
+            </div>
+            <div className="editor-stat-row">
+              <span className="editor-stat-number">{contentPack.medications.length}</span>
+              <span className="editor-stat-label">藥物主題</span>
+            </div>
+            <div className="editor-stat-row">
+              <span className="editor-stat-number">{contentPack.modules.length}</span>
+              <span className="editor-stat-label">衛教模組</span>
+            </div>
           </div>
-          {hasLocalChanges ? <p className="editor-local-changes-note">本機有未同步至伺服器的修改</p> : null}
+          <p className={`editor-summary-note ${hasLocalChanges ? 'editor-summary-note-warn' : ''}`}>
+            {hasLocalChanges ? '本機有未同步至伺服器的修改' : '目前與伺服器版本一致'}
+          </p>
         </article>
-        <article className="topic-card">
+        <article className="topic-card editor-summary-card">
           <p className="eyebrow">快速操作</p>
-          <div className="action-row">
+          <div className="editor-action-grid">
             <button type="button" className="primary-button" onClick={downloadJson}>
               下載 JSON
             </button>
@@ -372,7 +383,7 @@ export function ContentEditorPage() {
             />
             <button
               type="button"
-              className="ghost-button"
+              className="ghost-button editor-action-wide"
               onClick={() => {
                 if (window.confirm('放棄本機草稿後，會還原成伺服器上的版本。確定嗎？')) {
                   restoreDefaults()
@@ -382,11 +393,11 @@ export function ContentEditorPage() {
               放棄草稿，還原伺服器版本
             </button>
           </div>
-          <p className="editor-status-note">{copyStatus}</p>
+          <p className="editor-summary-note">{copyStatus}</p>
         </article>
-        <article className="topic-card">
+        <article className="topic-card editor-summary-card editor-summary-card-preview">
           <p className="eyebrow">切換查看</p>
-          <div className="action-row">
+          <div className="editor-preview-stack">
             <Link to="/doctor/create" className="ghost-link-button">
               看醫師端預覽
             </Link>
@@ -396,6 +407,9 @@ export function ContentEditorPage() {
               </Link>
             ) : null}
           </div>
+          <p className="editor-summary-note">
+            {currentDiagnosis ? `目前主題：${currentDiagnosis.name}` : '選一個疾病主題後，可直接切到病人端查看。'}
+          </p>
         </article>
       </section>
 
@@ -759,9 +773,16 @@ export function ContentEditorPage() {
                 <span>藥物大類 ID</span>
                 <input
                   value={currentMedication.groupId}
-                  onChange={(event) =>
-                    updateMedication(currentMedication.id, (item) => ({ ...item, groupId: slugify(event.target.value) }))
-                  }
+                  onChange={(event) => {
+                    const newGroupId = slugify(event.target.value)
+                    const oldGroupId = currentMedication.groupId
+                    updateContentPack((current) => ({
+                      ...current,
+                      medications: current.medications.map((item) =>
+                        item.groupId === oldGroupId ? { ...item, groupId: newGroupId } : item,
+                      ),
+                    }))
+                  }}
                 />
               </label>
 

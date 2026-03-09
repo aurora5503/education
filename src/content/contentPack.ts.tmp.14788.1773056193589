@@ -13,7 +13,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['先穩住睡眠與生活節奏', '規律服藥比頻繁換藥更重要', '心理治療可幫助降低復發'],
     selfCareTips: ['每天固定起床時間', '把一天拆成可完成的小任務', '把情緒變化告訴家人或醫療團隊'],
     relatedMedicationIds: ['antidepressant-ssri', 'antidepressant-snri', 'antidepressant-other', 'hypnotic-bzd'],
-    relatedModuleIds: ['activity-activation', 'sleep-rhythm', 'therapy-engagement', 'medication-adherence', 'exercise-activation', 'emotion-recognition', 'social-support'],
+    relatedModuleIds: ['activity-activation', 'sleep-rhythm', 'therapy-engagement', 'medication-adherence'],
   },
   {
     id: 'anxiety',
@@ -27,7 +27,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['先建立可重複使用的降速工具', '藥物與心理治療常需並行', '避免把所有身體不適都解讀成危險'],
     selfCareTips: ['先把呼吸放慢而不是急著壓掉感覺', '減少咖啡因與能量飲', '記錄最常引發焦慮的情境'],
     relatedMedicationIds: ['antidepressant-ssri', 'antidepressant-snri', 'hypnotic-bzd', 'hypnotic-supportive'],
-    relatedModuleIds: ['panic-grounding', 'stress-regulation', 'therapy-engagement', 'substance-reduction', 'exercise-activation', 'emotion-recognition'],
+    relatedModuleIds: ['panic-grounding', 'stress-regulation', 'therapy-engagement', 'substance-reduction'],
   },
   {
     id: 'insomnia',
@@ -41,7 +41,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['固定起床點比固定睡著時間更重要', '減少躺床清醒時間', '必要時短期用藥，但同步調整睡眠習慣'],
     selfCareTips: ['中午後減少茶咖啡與尼古丁', '睡不著時先離床做安靜活動', '白天保留固定活動量與日照'],
     relatedMedicationIds: ['hypnotic-bzd', 'hypnotic-zdrug', 'hypnotic-supportive', 'antidepressant-other'],
-    relatedModuleIds: ['sleep-rhythm', 'stress-regulation', 'substance-reduction', 'screen-boundaries', 'exercise-activation'],
+    relatedModuleIds: ['sleep-rhythm', 'stress-regulation', 'substance-reduction', 'screen-boundaries'],
   },
   {
     id: 'bipolar',
@@ -62,7 +62,7 @@ const diagnoses: DiagnosisTopic[] = [
       'antipsychotic-pine',
       'antipsychotic-piprazole',
     ],
-    relatedModuleIds: ['relapse-signatures', 'sleep-rhythm', 'family-communication', 'medication-adherence', 'exercise-activation', 'emotion-recognition', 'social-support'],
+    relatedModuleIds: ['relapse-signatures', 'sleep-rhythm', 'family-communication', 'medication-adherence'],
   },
   {
     id: 'schizophrenia',
@@ -76,7 +76,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['規律抗精神病藥可降低復發', '及早處理副作用能提高持續度', '生活節奏與社會支持同樣重要'],
     selfCareTips: ['固定作息與回診', '把復發前兆寫下來', '讓主要照顧者知道求助窗口'],
     relatedMedicationIds: ['antipsychotic-done', 'antipsychotic-pine', 'antipsychotic-piprazole'],
-    relatedModuleIds: ['family-communication', 'medication-adherence', 'relapse-signatures', 'return-to-work', 'exercise-activation', 'emotion-recognition', 'social-support'],
+    relatedModuleIds: ['family-communication', 'medication-adherence', 'relapse-signatures', 'return-to-work'],
   },
   {
     id: 'adhd',
@@ -90,7 +90,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['藥物幫助專注，策略幫助維持', '安排外部提醒與任務拆解', '追蹤食慾、睡眠與心悸變化'],
     selfCareTips: ['把任務拆成 10 到 20 分鐘', '用外部提醒取代只靠記憶', '預先規畫開始點與收尾點'],
     relatedMedicationIds: ['adhd-stimulant', 'adhd-atomoxetine', 'adhd-alpha2'],
-    relatedModuleIds: ['task-structuring', 'return-to-work', 'sleep-rhythm', 'therapy-engagement', 'exercise-activation', 'emotion-recognition'],
+    relatedModuleIds: ['task-structuring', 'return-to-work', 'sleep-rhythm', 'therapy-engagement'],
   },
 ]
 

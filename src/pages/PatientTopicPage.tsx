@@ -54,7 +54,7 @@ export function PatientTopicPage() {
           <p className="eyebrow">病人閱讀</p>
           <h1>{result.kind === 'module' ? result.topic.title : result.topic.name}</h1>
           <p className="hero-copy">
-            這一頁保留回家複習要用的完整衛教，不包含個別病人資料，也不能取代你的回診與醫囑。
+            這一頁保留回家複習要用的完整衛教，也不能取代你的回診與醫囑。
           </p>
         </div>
       </section>

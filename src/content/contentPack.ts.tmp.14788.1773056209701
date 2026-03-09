@@ -76,7 +76,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['規律抗精神病藥可降低復發', '及早處理副作用能提高持續度', '生活節奏與社會支持同樣重要'],
     selfCareTips: ['固定作息與回診', '把復發前兆寫下來', '讓主要照顧者知道求助窗口'],
     relatedMedicationIds: ['antipsychotic-done', 'antipsychotic-pine', 'antipsychotic-piprazole'],
-    relatedModuleIds: ['family-communication', 'medication-adherence', 'relapse-signatures', 'return-to-work', 'exercise-activation', 'emotion-recognition', 'social-support'],
+    relatedModuleIds: ['family-communication', 'medication-adherence', 'relapse-signatures', 'return-to-work'],
   },
   {
     id: 'adhd',
@@ -90,7 +90,7 @@ const diagnoses: DiagnosisTopic[] = [
     treatmentFocus: ['藥物幫助專注，策略幫助維持', '安排外部提醒與任務拆解', '追蹤食慾、睡眠與心悸變化'],
     selfCareTips: ['把任務拆成 10 到 20 分鐘', '用外部提醒取代只靠記憶', '預先規畫開始點與收尾點'],
     relatedMedicationIds: ['adhd-stimulant', 'adhd-atomoxetine', 'adhd-alpha2'],
-    relatedModuleIds: ['task-structuring', 'return-to-work', 'sleep-rhythm', 'therapy-engagement', 'exercise-activation', 'emotion-recognition'],
+    relatedModuleIds: ['task-structuring', 'return-to-work', 'sleep-rhythm', 'therapy-engagement'],
   },
 ]
 
