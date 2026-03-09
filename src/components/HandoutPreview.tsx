@@ -51,6 +51,12 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
     treatment: (
       <section key="treatment" className="paper-section">
         <div className="paper-section-title">目前治療方向</div>
+        {document.emphasisNote ? (
+          <div className="paper-emphasis-card">
+            <span className="paper-emphasis-label">醫師強調重點</span>
+            <p>{document.emphasisNote}</p>
+          </div>
+        ) : null}
         <div className="paper-info-card">
           <ul className="paper-list">
             {document.treatmentSummary.map((item) => (

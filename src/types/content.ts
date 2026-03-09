@@ -86,6 +86,7 @@ export interface HandoutDocument {
   modules: CareModule[]
   extraMedicationCount: number
   extraModuleCount: number
+  emphasisNote?: string
   treatmentSummary: string[]
   urgentFlags: string[]
   qrSlug: TopicSlug

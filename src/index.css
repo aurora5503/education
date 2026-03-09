@@ -617,6 +617,34 @@ button {
   background: linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(249, 252, 250, 0.94));
 }
 
+.paper-emphasis-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid rgba(215, 118, 79, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 246, 239, 0.96), rgba(255, 251, 247, 0.98));
+}
+
+.paper-emphasis-label {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(215, 118, 79, 0.12);
+  color: var(--accent-2);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.paper-emphasis-card p {
+  margin: 0;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
 .paper-callout {
   padding: 14px 16px;
   border-radius: 16px;
@@ -806,6 +834,21 @@ button {
 .patient-page .topic-card {
   padding: 18px;
   border-radius: 20px;
+}
+
+.patient-page .topic-card > p + .link-stack,
+.patient-page .topic-card > p + .topic-chip-grid,
+.patient-page .topic-card > p + .faq-stack,
+.patient-page .topic-card > p + .topic-columns,
+.patient-page .topic-card > p + .topic-list,
+.patient-page .topic-card > p + .ordered-topic-list {
+  margin-top: 16px;
+}
+
+.patient-page .topic-card > .topic-chip-grid + p,
+.patient-page .topic-card > .link-stack + p,
+.patient-page .topic-card > .faq-stack + p {
+  margin-top: 16px;
 }
 
 .patient-page .topic-card h2 {
@@ -1306,6 +1349,7 @@ button {
 
   .paper-diagnosis-card,
   .paper-info-card,
+  .paper-emphasis-card,
   .paper-callout,
   .paper-support-note,
   .paper-chip {
@@ -1313,8 +1357,15 @@ button {
   }
 
   .paper-diagnosis-card,
-  .paper-info-card {
+  .paper-info-card,
+  .paper-emphasis-card {
     border: 1px solid rgba(35, 50, 55, 0.14);
+  }
+
+  .paper-emphasis-label {
+    border: 1px solid rgba(35, 50, 55, 0.14);
+    background: white;
+    color: var(--ink);
   }
 
   .paper-callout {

@@ -27,10 +27,10 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
 
   const displayedMedications = medications.slice(0, 3)
   const displayedModules = modules.slice(0, 3)
+  const emphasisNote = request.visitContext?.emphasis?.trim() || undefined
 
   const treatmentSummary = unique([
     ...diagnosis.treatmentFocus,
-    request.visitContext?.emphasis ? `醫師強調重點：${request.visitContext.emphasis}` : '',
   ])
     .filter(Boolean)
     .slice(0, 4)
@@ -47,6 +47,7 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
     modules: displayedModules,
     extraMedicationCount: Math.max(0, medications.length - displayedMedications.length),
     extraModuleCount: Math.max(0, modules.length - displayedModules.length),
+    emphasisNote,
     treatmentSummary,
     urgentFlags,
     qrSlug: diagnosis.slug,
