@@ -59,7 +59,10 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
     treatmentSummary,
     urgentFlags,
     qrSlug: diagnosis.slug,
-    qrPath: `/patient/topic/${diagnosis.slug}`,
+    qrPath: request.contentVersion
+      ? `/patient/topic/${diagnosis.slug}?v=${encodeURIComponent(request.contentVersion)}`
+      : `/patient/topic/${diagnosis.slug}`,
+    contentVersion: request.contentVersion,
     note: request.note?.trim().slice(0, contentPack.template.noteLimit),
     visitContextLine: formatVisitContext(request.visitContext),
     generatedAt: new Intl.DateTimeFormat('zh-TW', {

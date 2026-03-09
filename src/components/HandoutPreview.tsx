@@ -18,7 +18,9 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
     )
   }
 
-  const appBaseUrl = new URL(import.meta.env.BASE_URL, window.location.origin)
+  const publicAppUrl = import.meta.env.VITE_PUBLIC_APP_URL?.trim()
+  const publicOrigin = publicAppUrl ? new URL(publicAppUrl).toString() : window.location.origin
+  const appBaseUrl = new URL(import.meta.env.BASE_URL, publicOrigin)
   const qrValue = new URL(document.qrPath.replace(/^\//, ''), appBaseUrl).toString()
 
   return (

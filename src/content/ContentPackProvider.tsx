@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { cloneContentPack, defaultContentPack } from './contentPack'
 import { ContentPackContext, type ContentPackContextValue } from './ContentPackContext'
+import { getContentVersion } from './contentVersion'
 import type { CareModule, ContentPack, DiagnosisTopic, MedicationFaq, MedicationTopic } from '../types/content'
 
 const STORAGE_KEY = 'psyedu.content-pack.v1'
@@ -170,6 +171,22 @@ function sanitizeContentPack(candidate: unknown): ContentPack {
   }
 }
 
+function validateImportedContentPack(contentPack: ContentPack) {
+  if (contentPack.diagnoses.length === 0) {
+    throw new Error('匯入內容至少需要 1 個疾病主題。')
+  }
+
+  if (contentPack.medications.length === 0) {
+    throw new Error('匯入內容至少需要 1 個藥物主題。')
+  }
+
+  if (contentPack.modules.length === 0) {
+    throw new Error('匯入內容至少需要 1 個衛教模組。')
+  }
+
+  return contentPack
+}
+
 function hashContentPack(contentPack: ContentPack) {
   return JSON.stringify(contentPack)
 }
@@ -267,8 +284,9 @@ export function ContentPackProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ContentPackContextValue>(
     () => ({
       contentPack,
+      contentVersion: getContentVersion(contentPack),
       updateContentPack: (updater) => setContentPack((current) => updater(current)),
-      importContentPack: (nextContentPack) => setContentPack(sanitizeContentPack(nextContentPack)),
+      importContentPack: (nextContentPack) => setContentPack(validateImportedContentPack(sanitizeContentPack(nextContentPack))),
       restoreDefaults: () => setContentPack(cloneContentPack(serverContentPack)),
       exportContentPack: () => JSON.stringify(contentPack, null, 2),
       hasLocalChanges: hashContentPack(contentPack) !== hashContentPack(serverContentPack),

@@ -142,20 +142,24 @@ export function ContentEditorPage() {
       return
     }
 
-    const confirmed = window.confirm('匯入 JSON 會覆蓋目前這台電腦上的自訂內容，是否繼續？')
-
-    if (!confirmed) {
-      event.target.value = ''
-      return
-    }
-
     try {
       const raw = await file.text()
       const parsed = JSON.parse(raw) as ContentPack
+      const diagnosisCount = Array.isArray(parsed.diagnoses) ? parsed.diagnoses.length : 0
+      const medicationCount = Array.isArray(parsed.medications) ? parsed.medications.length : 0
+      const moduleCount = Array.isArray(parsed.modules) ? parsed.modules.length : 0
+      const confirmed = window.confirm(
+        `匯入 ${file.name} 會覆蓋目前這台電腦上的自訂內容。\n\n症況主題：${diagnosisCount}\n藥物主題：${medicationCount}\n衛教模組：${moduleCount}\n\n是否繼續？`,
+      )
+
+      if (!confirmed) {
+        return
+      }
+
       importContentPack(parsed)
       setCopyStatus(`已匯入 ${file.name}`)
-    } catch {
-      setCopyStatus('匯入失敗，請確認檔案是正確的 JSON')
+    } catch (error) {
+      setCopyStatus(error instanceof Error ? `匯入失敗：${error.message}` : '匯入失敗，請確認檔案是正確的 JSON')
     } finally {
       event.target.value = ''
     }

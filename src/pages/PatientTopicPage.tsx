@@ -1,10 +1,13 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { getRelatedMedications, getTopicBySlug } from '../content/contentPack'
 import { useContentPack } from '../content/useContentPack'
 
 export function PatientTopicPage() {
-  const { contentPack } = useContentPack()
+  const { contentPack, contentVersion } = useContentPack()
   const { slug = '' } = useParams()
+  const location = useLocation()
+  const requestedVersion = new URLSearchParams(location.search).get('v')
+  const isOutdatedContentVersion = Boolean(requestedVersion && requestedVersion !== contentVersion)
   const result = getTopicBySlug(contentPack, slug)
   const relatedMedications =
     result?.kind === 'diagnosis' ? getRelatedMedications(contentPack, result.topic.relatedMedicationIds) : []
@@ -39,95 +42,88 @@ export function PatientTopicPage() {
         </div>
       </section>
 
+      {isOutdatedContentVersion ? (
+        <section className="inline-banner">
+          <div>
+            <strong>這份衛教內容已更新</strong>
+            <p>目前顯示的是最新版內容；若你手上的紙本較早列印，細節可能和當時版本略有不同。</p>
+          </div>
+        </section>
+      ) : null}
+
       {result.kind === 'diagnosis' ? (
         <>
           <section className="patient-summary-strip" aria-label="回家重點">
             <article className="patient-summary-card">
               <span className="patient-summary-label">回家先記得</span>
               <ul className="patient-summary-list">
-                {result.topic.selfCareTips.slice(0, 3).map((item) => (
-                  <li key={item}>{item}</li>
+                {result.topic.selfCareTips.slice(0, 3).map((item, index) => (
+                  <li key={`${result.topic.id}-self-care-${index}`}>{item}</li>
                 ))}
               </ul>
             </article>
             <article className="patient-summary-card patient-summary-card-urgent">
               <span className="patient-summary-label">這些情況請提早回診</span>
               <ul className="patient-summary-list">
-                {result.topic.redFlags.slice(0, 3).map((item) => (
-                  <li key={item}>{item}</li>
+                {result.topic.redFlags.slice(0, 3).map((item, index) => (
+                  <li key={`${result.topic.id}-red-flag-${index}`}>{item}</li>
                 ))}
               </ul>
             </article>
           </section>
 
           <div className="topic-layout">
-          <section className="topic-main">
-            <article className="topic-card">
-              <h2>這是什麼</h2>
-              <p>{result.topic.coreSummary}</p>
-            </article>
-            <article className="topic-card patient-priority-card">
-              <h2>回家後先做這些事</h2>
-              <ul className="topic-list">
-                {result.topic.selfCareTips.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="topic-card warning-card">
-              <h2>什麼情況要提早聯絡醫療團隊</h2>
-              <ul className="topic-list">
-                {result.topic.redFlags.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="topic-card">
-              <h2>常見表現</h2>
-              <div className="topic-chip-grid">
-                {result.topic.commonSymptoms.map((item) => (
-                  <span key={item} className="chip">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </article>
-            <article className="topic-card">
-              <h2>治療通常怎麼進行</h2>
-              <p>{result.topic.courseExpectation}</p>
-              <ul className="topic-list">
-                {result.topic.treatmentFocus.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-          </section>
+            <section className="topic-main">
+              <article className="topic-card">
+                <h2>這是什麼</h2>
+                <p>{result.topic.coreSummary}</p>
+              </article>
+              <article className="topic-card">
+                <h2>常見表現</h2>
+                <div className="topic-chip-grid">
+                  {result.topic.commonSymptoms.map((item, index) => (
+                    <span key={`${result.topic.id}-symptom-${index}`} className="chip">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </article>
+              <article className="topic-card">
+                <h2>治療通常怎麼進行</h2>
+                <p>{result.topic.courseExpectation}</p>
+                <ul className="topic-list">
+                  {result.topic.treatmentFocus.map((item, index) => (
+                    <li key={`${result.topic.id}-treatment-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            </section>
 
-          <aside className="topic-side">
-            <article className="topic-card">
-              <h2>常見迷思</h2>
-              <ul className="topic-list">
-                {result.topic.myths.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="topic-card">
-              <h2>相關藥物主題</h2>
-              <div className="link-stack">
-                {relatedMedications.length > 0 ? (
-                  relatedMedications.map((medication) => (
-                    <Link key={medication.id} to={`/patient/topic/${medication.slug}`} className="inline-link-card">
-                      <strong>{medication.name}</strong>
-                      <span>{medication.classLabel}</span>
-                    </Link>
-                  ))
-                ) : (
-                  <p>目前沒有延伸藥物主題。</p>
-                )}
-              </div>
-            </article>
-          </aside>
+            <aside className="topic-side">
+              <article className="topic-card">
+                <h2>常見迷思</h2>
+                <ul className="topic-list">
+                  {result.topic.myths.map((item, index) => (
+                    <li key={`${result.topic.id}-myth-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+              <article className="topic-card">
+                <h2>相關藥物主題</h2>
+                <div className="link-stack">
+                  {relatedMedications.length > 0 ? (
+                    relatedMedications.map((medication) => (
+                      <Link key={medication.id} to={`/patient/topic/${medication.slug}`} className="inline-link-card">
+                        <strong>{medication.name}</strong>
+                        <span>{medication.classLabel}</span>
+                      </Link>
+                    ))
+                  ) : (
+                    <p>目前沒有延伸藥物主題。</p>
+                  )}
+                </div>
+              </article>
+            </aside>
           </div>
         </>
       ) : (
@@ -143,81 +139,81 @@ export function PatientTopicPage() {
             <article className="patient-summary-card patient-summary-card-urgent">
               <span className="patient-summary-label">這些情況請回診確認</span>
               <ul className="patient-summary-list">
-                {result.topic.whenToCall.slice(0, 3).map((item) => (
-                  <li key={item}>{item}</li>
+                {result.topic.whenToCall.slice(0, 3).map((item, index) => (
+                  <li key={`${result.topic.id}-when-to-call-${index}`}>{item}</li>
                 ))}
               </ul>
             </article>
           </section>
 
           <div className="topic-layout">
-          <section className="topic-main">
-            <article className="topic-card">
-              <h2>這類藥物通常在做什麼</h2>
-              <p>{result.topic.patientIntro}</p>
-            </article>
-            <article className="topic-card">
-              <h2>常見用途</h2>
-              <div className="topic-chip-grid">
-                {result.topic.indications.map((item) => (
-                  <span key={item} className="chip">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </article>
-            <article className="topic-card">
-              <h2>療程與副作用</h2>
-              <p>{result.topic.onset}</p>
-              <div className="topic-columns">
-                <div>
-                  <h3>常見副作用</h3>
-                  <ul className="topic-list">
-                    {result.topic.commonSideEffects.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+            <section className="topic-main">
+              <article className="topic-card">
+                <h2>這類藥物通常在做什麼</h2>
+                <p>{result.topic.patientIntro}</p>
+              </article>
+              <article className="topic-card">
+                <h2>常見用途</h2>
+                <div className="topic-chip-grid">
+                  {result.topic.indications.map((item, index) => (
+                    <span key={`${result.topic.id}-indication-${index}`} className="chip">
+                      {item}
+                    </span>
+                  ))}
                 </div>
-                <div>
-                  <h3>重要副作用</h3>
-                  <ul className="topic-list">
-                    {result.topic.seriousSideEffects.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </article>
-          </section>
-
-          <aside className="topic-side">
-            <article className="topic-card">
-              <h2>病人常問</h2>
-              <div className="faq-stack">
-                {result.topic.faq.map((item) => (
-                  <div key={item.question} className="faq-item">
-                    <strong>{item.question}</strong>
-                    <p>{item.answer}</p>
+              </article>
+              <article className="topic-card">
+                <h2>療程與副作用</h2>
+                <p>{result.topic.onset}</p>
+                <div className="topic-columns">
+                  <div>
+                    <h3>常見副作用</h3>
+                    <ul className="topic-list">
+                      {result.topic.commonSideEffects.map((item, index) => (
+                        <li key={`${result.topic.id}-common-side-effect-${index}`}>{item}</li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
-              </div>
-            </article>
-            <article className="topic-card">
-              <h2>回到主題入口</h2>
-              <div className="link-stack">
-                {relatedDiagnoses.length > 0 ? (
-                  relatedDiagnoses.map((diagnosis) => (
-                    <Link key={diagnosis.id} to={`/patient/topic/${diagnosis.slug}`} className="inline-link-card">
-                      <strong>{diagnosis.name}</strong>
-                      <span>{diagnosis.coreSummary}</span>
-                    </Link>
-                  ))
-                ) : (
-                  <p>目前沒有其他主題可返回。</p>
-                )}
-              </div>
-            </article>
-          </aside>
+                  <div>
+                    <h3>重要副作用</h3>
+                    <ul className="topic-list">
+                      {result.topic.seriousSideEffects.map((item, index) => (
+                        <li key={`${result.topic.id}-serious-side-effect-${index}`}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <aside className="topic-side">
+              <article className="topic-card">
+                <h2>病人常問</h2>
+                <div className="faq-stack">
+                  {result.topic.faq.map((item, index) => (
+                    <div key={`${result.topic.id}-faq-${index}`} className="faq-item">
+                      <strong>{item.question}</strong>
+                      <p>{item.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="topic-card">
+                <h2>回到主題入口</h2>
+                <div className="link-stack">
+                  {relatedDiagnoses.length > 0 ? (
+                    relatedDiagnoses.map((diagnosis) => (
+                      <Link key={diagnosis.id} to={`/patient/topic/${diagnosis.slug}`} className="inline-link-card">
+                        <strong>{diagnosis.name}</strong>
+                        <span>{diagnosis.coreSummary}</span>
+                      </Link>
+                    ))
+                  ) : (
+                    <p>目前沒有其他主題可返回。</p>
+                  )}
+                </div>
+              </article>
+            </aside>
           </div>
         </>
       )}

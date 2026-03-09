@@ -11,7 +11,7 @@ const blankVisitContext: VisitContext = {
 }
 
 export function DoctorCreatePage() {
-  const { contentPack } = useContentPack()
+  const { contentPack, contentVersion } = useContentPack()
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState('')
   const [selectedMedicationIds, setSelectedMedicationIds] = useState<string[]>([])
   const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>([])
@@ -31,8 +31,9 @@ export function DoctorCreatePage() {
         selectedModuleIds,
         note,
         visitContext,
+        contentVersion,
       }),
-    [contentPack, note, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
+    [contentPack, contentVersion, note, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
   )
 
   const recommendedMedicationIds = selectedDiagnosis?.relatedMedicationIds ?? []
@@ -72,7 +73,7 @@ export function DoctorCreatePage() {
               </div>
               <span className="panel-meta">首發 6 個常見主題</span>
             </div>
-            <div className="selection-grid diagnosis-grid">
+            <div className="selection-grid diagnosis-grid" role="radiogroup" aria-label="主軸診斷">
               {contentPack.diagnoses.map((diagnosis) => {
                 const isActive = diagnosis.id === selectedDiagnosisId
 
@@ -80,6 +81,8 @@ export function DoctorCreatePage() {
                   <button
                     key={diagnosis.id}
                     type="button"
+                    role="radio"
+                    aria-checked={isActive}
                     className={`selection-card diagnosis-card compact-selection-card ${isActive ? 'active' : ''}`}
                     onClick={() => setSelectedDiagnosisId(diagnosis.id)}
                   >
@@ -105,7 +108,7 @@ export function DoctorCreatePage() {
               </div>
               <span className="panel-meta">療程與副作用最優先</span>
             </div>
-            <div className="selection-grid medication-grid-panel">
+            <div className="selection-grid medication-grid-panel" role="group" aria-label="藥物類別">
               {contentPack.medications.map((medication) => {
                 const isActive = selectedMedicationIds.includes(medication.id)
                 const isRecommended = recommendedMedicationIds.includes(medication.id)
@@ -114,6 +117,7 @@ export function DoctorCreatePage() {
                   <button
                     key={medication.id}
                     type="button"
+                    aria-pressed={isActive}
                     className={`selection-card compact-selection-card ${isActive ? 'active' : ''}`}
                     onClick={() => toggleSelection(selectedMedicationIds, medication.id, setSelectedMedicationIds)}
                   >
@@ -153,6 +157,7 @@ export function DoctorCreatePage() {
                         <button
                           key={module.id}
                           type="button"
+                          aria-pressed={isActive}
                           className={`selection-card module-card-panel ${isActive ? 'active' : ''}`}
                           onClick={() => toggleSelection(selectedModuleIds, module.id, setSelectedModuleIds)}
                         >

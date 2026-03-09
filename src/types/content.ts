@@ -71,6 +71,7 @@ export interface HandoutRequest {
   selectedModuleIds: string[]
   note?: string
   visitContext?: VisitContext
+  contentVersion?: string
 }
 
 export interface HandoutDocument {
@@ -84,6 +85,7 @@ export interface HandoutDocument {
   urgentFlags: string[]
   qrSlug: TopicSlug
   qrPath: string
+  contentVersion?: string
   note?: string
   visitContextLine?: string
   generatedAt: string

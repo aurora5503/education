@@ -43,14 +43,14 @@ npm run build
 ### GitHub Pages
 
 - 使用 `BrowserRouter`，並透過 `404.html` fallback 處理重新整理子路徑
-- build 時要帶 repo base，例如：
-
-```bash
-npm run build -- --base=/your-repo-name/
-```
-
-- 如果是 `https://username.github.io/your-repo-name/`，就把 `your-repo-name` 換成你的 repo 名稱
+- 這個專案目前預設發布到 `https://aurora5503.github.io/education/`
+- `.env.production` 已經預先設定：
+  - `VITE_APP_BASE=/education/`
+  - `VITE_PUBLIC_APP_URL=https://aurora5503.github.io/education/`
+- 因此正式 build 直接跑 `npm run build` 即可
 - `public/content/content-pack.json` 會一起進入輸出，作為 GitHub Pages 上的基準內容
+- 列印頁的 QR code 會優先使用 `VITE_PUBLIC_APP_URL` 當公開網址；部署到 GitHub Pages 時，建議設成完整站點位址，例如 `https://username.github.io/your-repo-name/`
+- QR 會附上列印當下的內容版本；如果病人之後掃到的是新版內容，病人頁會提示「這份衛教內容已更新」，避免舊紙本和新版網站混淆
 
 ## 資料保存方式
 

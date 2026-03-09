@@ -3,6 +3,7 @@ import type { ContentPack } from '../types/content'
 
 export interface ContentPackContextValue {
   contentPack: ContentPack
+  contentVersion: string
   updateContentPack: (updater: (current: ContentPack) => ContentPack) => void
   importContentPack: (nextContentPack: ContentPack) => void
   restoreDefaults: () => void
