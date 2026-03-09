@@ -70,5 +70,6 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
       month: '2-digit',
       day: '2-digit',
     }).format(new Date()),
+    sectionOrder: contentPack.template.sectionOrder,
   }
 }

@@ -89,4 +89,5 @@ export interface HandoutDocument {
   note?: string
   visitContextLine?: string
   generatedAt: string
+  sectionOrder: Array<'diagnosis' | 'treatment' | 'medication' | 'modules' | 'urgent' | 'qr'>
 }

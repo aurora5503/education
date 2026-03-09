@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useContentPack } from '../content/useContentPack'
 import type { ContentPack } from '../types/content'
@@ -53,12 +53,14 @@ const toggleRelatedId = (current: string[], id: string) =>
   current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
 
 export function ContentEditorPage() {
-  const { contentPack, updateContentPack, importContentPack, restoreDefaults, exportContentPack } = useContentPack()
+  const { contentPack, updateContentPack, importContentPack, restoreDefaults, exportContentPack, hasLocalChanges } = useContentPack()
   const [section, setSection] = useState<EditorSection>('diagnoses')
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(contentPack.diagnoses[0]?.id ?? '')
   const [selectedMedicationId, setSelectedMedicationId] = useState(contentPack.medications[0]?.id ?? '')
   const [selectedModuleId, setSelectedModuleId] = useState(contentPack.modules[0]?.id ?? '')
   const [copyStatus, setCopyStatus] = useState('尚未匯出')
+  const [diagnosisSlugDraft, setDiagnosisSlugDraft] = useState<string | null>(null)
+  const [medicationSlugDraft, setMedicationSlugDraft] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const activeDiagnosisId = contentPack.diagnoses.some((item) => item.id === selectedDiagnosisId)
@@ -87,6 +89,9 @@ export function ContentEditorPage() {
     () => contentPack.modules.find((item) => item.id === activeModuleId) ?? contentPack.modules[0],
     [activeModuleId, contentPack.modules],
   )
+
+  useEffect(() => { setDiagnosisSlugDraft(null) }, [activeDiagnosisId])
+  useEffect(() => { setMedicationSlugDraft(null) }, [activeMedicationId])
 
   const updateDiagnosis = (id: string, updater: (item: DiagnosisTopic) => DiagnosisTopic) => {
     updateContentPack((current) => ({
@@ -145,6 +150,10 @@ export function ContentEditorPage() {
     try {
       const raw = await file.text()
       const parsed = JSON.parse(raw) as ContentPack
+      if (typeof parsed !== 'object' || parsed === null || !Array.isArray(parsed.diagnoses)) {
+        setCopyStatus('匯入失敗：檔案格式不符，請確認是正確的衛教內容 JSON')
+        return
+      }
       const diagnosisCount = Array.isArray(parsed.diagnoses) ? parsed.diagnoses.length : 0
       const medicationCount = Array.isArray(parsed.medications) ? parsed.medications.length : 0
       const moduleCount = Array.isArray(parsed.modules) ? parsed.modules.length : 0
@@ -322,7 +331,9 @@ export function ContentEditorPage() {
         <article className="topic-card">
           <p className="eyebrow">目前資料</p>
           <h2>{contentPack.diagnoses.length} 個症況主題</h2>
+          <p>藥物主題：{contentPack.medications.length} 個　衛教模組：{contentPack.modules.length} 個</p>
           <p>會同步影響醫師端建立頁、列印預覽與病人端主題頁。</p>
+          {hasLocalChanges ? <p className="editor-local-changes-note">本機有未同步至伺服器的修改</p> : null}
         </article>
         <article className="topic-card">
           <p className="eyebrow">快速操作</p>
@@ -343,8 +354,16 @@ export function ContentEditorPage() {
               className="sr-only"
               onChange={handleImportFile}
             />
-            <button type="button" className="ghost-button" onClick={restoreDefaults}>
-              還原預設內容
+            <button
+              type="button"
+              className="ghost-button"
+              onClick={() => {
+                if (window.confirm('放棄本機草稿後，會還原成伺服器上的版本。確定嗎？')) {
+                  restoreDefaults()
+                }
+              }}
+            >
+              放棄草稿，還原伺服器版本
             </button>
           </div>
           <p className="editor-status-note">{copyStatus}</p>
@@ -482,18 +501,20 @@ export function ContentEditorPage() {
                 <label className="field">
                   <span>病人端 slug</span>
                   <input
-                    value={currentDiagnosis.slug}
-                    onChange={(event) =>
-                      updateDiagnosis(currentDiagnosis.id, (item) => ({
-                        ...item,
-                        slug: createUniqueSlug(
-                          contentPack.diagnoses
-                            .filter((entry) => entry.id !== item.id)
-                            .map((entry) => entry.slug),
-                          event.target.value,
-                        ),
-                      }))
-                    }
+                    value={diagnosisSlugDraft ?? currentDiagnosis.slug}
+                    onChange={(event) => setDiagnosisSlugDraft(event.target.value)}
+                    onBlur={() => {
+                      if (diagnosisSlugDraft !== null) {
+                        updateDiagnosis(currentDiagnosis.id, (item) => ({
+                          ...item,
+                          slug: createUniqueSlug(
+                            contentPack.diagnoses.filter((e) => e.id !== item.id).map((e) => e.slug),
+                            diagnosisSlugDraft,
+                          ),
+                        }))
+                        setDiagnosisSlugDraft(null)
+                      }
+                    }}
                   />
                 </label>
               </div>
@@ -691,18 +712,20 @@ export function ContentEditorPage() {
                 <label className="field">
                   <span>病人端 slug</span>
                   <input
-                    value={currentMedication.slug}
-                    onChange={(event) =>
-                      updateMedication(currentMedication.id, (item) => ({
-                        ...item,
-                        slug: createUniqueSlug(
-                          contentPack.medications
-                            .filter((entry) => entry.id !== item.id)
-                            .map((entry) => entry.slug),
-                          event.target.value,
-                        ),
-                      }))
-                    }
+                    value={medicationSlugDraft ?? currentMedication.slug}
+                    onChange={(event) => setMedicationSlugDraft(event.target.value)}
+                    onBlur={() => {
+                      if (medicationSlugDraft !== null) {
+                        updateMedication(currentMedication.id, (item) => ({
+                          ...item,
+                          slug: createUniqueSlug(
+                            contentPack.medications.filter((e) => e.id !== item.id).map((e) => e.slug),
+                            medicationSlugDraft,
+                          ),
+                        }))
+                        setMedicationSlugDraft(null)
+                      }
+                    }}
                   />
                 </label>
               </div>
@@ -835,6 +858,21 @@ export function ContentEditorPage() {
 
                 {currentMedication.faq.map((faqItem, index) => (
                   <div key={`${currentMedication.id}-${index}`} className="editor-faq-card">
+                    <div className="editor-inline-heading">
+                      <span className="panel-meta">問題 {index + 1}</span>
+                      <button
+                        type="button"
+                        className="ghost-button"
+                        onClick={() =>
+                          updateMedication(currentMedication.id, (item) => ({
+                            ...item,
+                            faq: item.faq.filter((_, i) => i !== index),
+                          }))
+                        }
+                      >
+                        刪除
+                      </button>
+                    </div>
                     <label className="field">
                       <span>問題</span>
                       <input

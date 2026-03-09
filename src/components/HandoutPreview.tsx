@@ -18,10 +18,119 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
     )
   }
 
-  const publicAppUrl = import.meta.env.VITE_PUBLIC_APP_URL?.trim()
-  const publicOrigin = publicAppUrl ? new URL(publicAppUrl).toString() : window.location.origin
-  const appBaseUrl = new URL(import.meta.env.BASE_URL, publicOrigin)
-  const qrValue = new URL(document.qrPath.replace(/^\//, ''), appBaseUrl).toString()
+  let qrValue = document.qrPath
+  try {
+    const publicAppUrl = import.meta.env.VITE_PUBLIC_APP_URL?.trim()
+    const publicOrigin = publicAppUrl ? new URL(publicAppUrl).toString() : window.location.origin
+    const appBaseUrl = new URL(import.meta.env.BASE_URL, publicOrigin)
+    qrValue = new URL(document.qrPath.replace(/^\//, ''), appBaseUrl).toString()
+  } catch {
+    // fallback to relative path
+  }
+
+  const sections: Record<string, React.ReactNode> = {
+    diagnosis: (
+      <section key="diagnosis" className="paper-section">
+        <div className="paper-section-title">診斷摘要</div>
+        <div className="paper-callout">
+          <strong>{document.diagnosis.name}</strong>
+          <p>{document.diagnosis.coreSummary}</p>
+        </div>
+        <ul className="paper-list two-column">
+          {document.diagnosis.commonSymptoms.slice(0, 4).map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        <p className="paper-note">{document.diagnosis.courseExpectation}</p>
+      </section>
+    ),
+    treatment: (
+      <section key="treatment" className="paper-section">
+        <div className="paper-section-title">目前治療方向</div>
+        <ul className="paper-list">
+          {document.treatmentSummary.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+    ),
+    medication: (
+      <section key="medication" className="paper-section">
+        <div className="paper-section-title">藥物重點</div>
+        {document.medications.length === 0 ? (
+          <p className="paper-note">本次未勾選藥物類別，可先用 QR code 讓病人回看完整主題頁。</p>
+        ) : (
+          <div className="medication-grid">
+            {document.medications.map((medication) => (
+              <article key={medication.id} className="medication-card">
+                <header>
+                  <strong>{medication.name}</strong>
+                  <span>{medication.classLabel}</span>
+                </header>
+                <p>{medication.onset}</p>
+                <div className="chip-row">
+                  {medication.commonSideEffects.slice(0, 4).map((effect) => (
+                    <span key={effect} className="chip warn">
+                      {effect}
+                    </span>
+                  ))}
+                </div>
+                <p className="medication-alert">重要提醒：{medication.discontinuationAdvice}</p>
+              </article>
+            ))}
+          </div>
+        )}
+        {document.extraMedicationCount > 0 ? (
+          <p className="paper-note">另有 {document.extraMedicationCount} 個藥物主題已收斂為 QR 延伸閱讀。</p>
+        ) : null}
+      </section>
+    ),
+    modules: (
+      <section key="modules" className="paper-section">
+        <div className="paper-section-title">心理與生活建議</div>
+        {document.modules.length === 0 ? (
+          <p className="paper-note">本次未加入額外模組，可依病人需求補充睡眠、壓力或復學復工提醒。</p>
+        ) : (
+          <div className="module-list">
+            {document.modules.map((module) => (
+              <article key={module.id} className="module-card">
+                <strong>{module.title}</strong>
+                <p>{module.summary}</p>
+              </article>
+            ))}
+          </div>
+        )}
+        {document.extraModuleCount > 0 ? (
+          <p className="paper-note">另有 {document.extraModuleCount} 個模組已收斂為現場口頭補充與 QR 延伸閱讀。</p>
+        ) : null}
+      </section>
+    ),
+    urgent: (
+      <section key="urgent" className="paper-section urgent-section">
+        <div className="paper-section-title">何時盡快回診</div>
+        <ul className="paper-list">
+          {document.urgentFlags.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+    ),
+    qr: (
+      <section key="qr" className="paper-section qr-section">
+        <div>
+          <div className="paper-section-title">延伸閱讀</div>
+          <p className="paper-note">
+            掃描 QR code 可查看不含個資的主題頁，回家後仍可複習症狀、治療與副作用重點。
+          </p>
+          {document.note ? <p className="handout-note">本次請特別注意：{document.note}</p> : null}
+        </div>
+        <div className="qr-card">
+          <QRCodeSVG value={qrValue} size={96} level="M" includeMargin />
+          <span>{document.diagnosis.name} 主題頁</span>
+        </div>
+      </section>
+    ),
+  }
 
   return (
     <section className="preview-shell">
@@ -44,100 +153,7 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
           </div>
         </header>
 
-        <section className="paper-section">
-          <div className="paper-section-title">診斷摘要</div>
-          <div className="paper-callout">
-            <strong>{document.diagnosis.name}</strong>
-            <p>{document.diagnosis.coreSummary}</p>
-          </div>
-          <ul className="paper-list two-column">
-            {document.diagnosis.commonSymptoms.slice(0, 4).map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          <p className="paper-note">{document.diagnosis.courseExpectation}</p>
-        </section>
-
-        <section className="paper-section">
-          <div className="paper-section-title">目前治療方向</div>
-          <ul className="paper-list">
-            {document.treatmentSummary.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="paper-section">
-          <div className="paper-section-title">藥物重點</div>
-          {document.medications.length === 0 ? (
-            <p className="paper-note">本次未勾選藥物類別，可先用 QR code 讓病人回看完整主題頁。</p>
-          ) : (
-            <div className="medication-grid">
-              {document.medications.map((medication) => (
-                <article key={medication.id} className="medication-card">
-                  <header>
-                    <strong>{medication.name}</strong>
-                    <span>{medication.classLabel}</span>
-                  </header>
-                  <p>{medication.onset}</p>
-                  <div className="chip-row">
-                    {medication.commonSideEffects.slice(0, 4).map((effect) => (
-                      <span key={effect} className="chip warn">
-                        {effect}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="medication-alert">重要提醒：{medication.discontinuationAdvice}</p>
-                </article>
-              ))}
-            </div>
-          )}
-          {document.extraMedicationCount > 0 ? (
-            <p className="paper-note">另有 {document.extraMedicationCount} 個藥物主題已收斂為 QR 延伸閱讀。</p>
-          ) : null}
-        </section>
-
-        <section className="paper-section">
-          <div className="paper-section-title">心理與生活建議</div>
-          {document.modules.length === 0 ? (
-            <p className="paper-note">本次未加入額外模組，可依病人需求補充睡眠、壓力或復學復工提醒。</p>
-          ) : (
-            <div className="module-list">
-              {document.modules.map((module) => (
-                <article key={module.id} className="module-card">
-                  <strong>{module.title}</strong>
-                  <p>{module.summary}</p>
-                </article>
-              ))}
-            </div>
-          )}
-          {document.extraModuleCount > 0 ? (
-            <p className="paper-note">另有 {document.extraModuleCount} 個模組已收斂為現場口頭補充與 QR 延伸閱讀。</p>
-          ) : null}
-        </section>
-
-        <section className="paper-section urgent-section">
-          <div className="paper-section-title">何時盡快回診</div>
-          <ul className="paper-list">
-            {document.urgentFlags.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="paper-section qr-section">
-          <div>
-            <div className="paper-section-title">延伸閱讀</div>
-            <p className="paper-note">
-              掃描 QR code 可查看不含個資的主題頁，回家後仍可複習症狀、治療與副作用重點。
-            </p>
-            {document.note ? <p className="handout-note">本次請特別注意：{document.note}</p> : null}
-          </div>
-          <div className="qr-card">
-            <QRCodeSVG value={qrValue} size={96} level="M" includeMargin />
-            <span>{document.diagnosis.name} 主題頁</span>
-          </div>
-        </section>
+        {document.sectionOrder.map((key) => sections[key] ?? null)}
       </article>
     </section>
   )

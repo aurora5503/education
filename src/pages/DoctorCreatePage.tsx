@@ -108,6 +108,9 @@ export function DoctorCreatePage() {
               </div>
               <span className="panel-meta">療程與副作用最優先</span>
             </div>
+            {selectedMedicationIds.length >= 2 ? (
+              <p className="panel-limit-note">已達上限，衛教單最多顯示 2 種藥物，超出部分不會印出。</p>
+            ) : null}
             <div className="selection-grid medication-grid-panel" role="group" aria-label="藥物類別">
               {contentPack.medications.map((medication) => {
                 const isActive = selectedMedicationIds.includes(medication.id)
@@ -143,6 +146,9 @@ export function DoctorCreatePage() {
               <span className="panel-meta">建議 1 到 3 項</span>
             </div>
 
+            {selectedModuleIds.length >= 3 ? (
+              <p className="panel-limit-note">已達上限，衛教單最多顯示 3 個模組，超出部分不會印出。</p>
+            ) : null}
             {(['counseling', 'lifestyle'] as const).map((kind) => (
               <div key={kind} className="module-group">
                 <div className="module-group-title">{kind === 'counseling' ? '心理與追蹤' : '生活與功能'}</div>

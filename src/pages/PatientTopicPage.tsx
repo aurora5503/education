@@ -24,6 +24,7 @@ export function PatientTopicPage() {
             <p className="eyebrow">病人閱讀</p>
             <h1>找不到這份衛教內容</h1>
             <p className="hero-copy">這個 QR code 可能已更新，請回到門診衛教單重新掃描，或在下次回診時請醫師重新提供。</p>
+            <Link to="/doctor/create" className="ghost-link-button">回到醫師端建立頁</Link>
           </div>
         </section>
       </div>
@@ -60,6 +61,9 @@ export function PatientTopicPage() {
                 {result.topic.selfCareTips.slice(0, 3).map((item, index) => (
                   <li key={`${result.topic.id}-self-care-${index}`}>{item}</li>
                 ))}
+                {result.topic.selfCareTips.length > 3 ? (
+                  <li className="patient-summary-more">另有 {result.topic.selfCareTips.length - 3} 項，詳見紙本衛教單</li>
+                ) : null}
               </ul>
             </article>
             <article className="patient-summary-card patient-summary-card-urgent">
@@ -68,6 +72,9 @@ export function PatientTopicPage() {
                 {result.topic.redFlags.slice(0, 3).map((item, index) => (
                   <li key={`${result.topic.id}-red-flag-${index}`}>{item}</li>
                 ))}
+                {result.topic.redFlags.length > 3 ? (
+                  <li className="patient-summary-more">另有 {result.topic.redFlags.length - 3} 項，詳見紙本衛教單</li>
+                ) : null}
               </ul>
             </article>
           </section>
@@ -142,6 +149,9 @@ export function PatientTopicPage() {
                 {result.topic.whenToCall.slice(0, 3).map((item, index) => (
                   <li key={`${result.topic.id}-when-to-call-${index}`}>{item}</li>
                 ))}
+                {result.topic.whenToCall.length > 3 ? (
+                  <li className="patient-summary-more">另有 {result.topic.whenToCall.length - 3} 項，詳見紙本衛教單</li>
+                ) : null}
               </ul>
             </article>
           </section>
