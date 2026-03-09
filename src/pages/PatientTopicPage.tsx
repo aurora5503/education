@@ -22,10 +22,6 @@ export function PatientTopicPage() {
             <h1>找不到這份衛教內容</h1>
             <p className="hero-copy">這個 QR code 可能已更新，請回到門診衛教單重新掃描，或在下次回診時請醫師重新提供。</p>
           </div>
-          <div className="hero-card patient-hero-card">
-            <span className="pill subtle">不顯示個資</span>
-            <span className="pill">請以最新衛教單為準</span>
-          </div>
         </section>
       </div>
     )
@@ -40,11 +36,6 @@ export function PatientTopicPage() {
           <p className="hero-copy">
             這一頁只保留回家複習需要的衛教重點，不包含個別病人資料，也不能取代你的回診與醫囑。
           </p>
-        </div>
-        <div className="hero-card patient-hero-card">
-          <span className="pill subtle">病人閱讀版</span>
-          <span className="pill">不顯示個資</span>
-          <span className="pill subtle">建議回診前再複習一次</span>
         </div>
       </section>
 

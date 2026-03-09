@@ -60,11 +60,6 @@ export function DoctorCreatePage() {
             用單頁流程快速組出門診後衛教單。診斷、藥物副作用、心理與生活建議都會即時整合成 A4 列印版。
           </p>
         </div>
-        <div className="hero-card">
-          <span className="pill">不保存病人個資</span>
-          <span className="pill accent">手動勾選產生</span>
-          <span className="pill subtle">適合門診現場列印</span>
-        </div>
       </section>
 
       <div className="doctor-layout">
@@ -90,7 +85,11 @@ export function DoctorCreatePage() {
                   >
                     <div className="selection-header">
                       <strong>{diagnosis.name}</strong>
-                      {isActive ? <span className="pill accent">已選取</span> : null}
+                      {isActive ? (
+                        <div className="selection-badges">
+                          <span className="pill accent">已選取</span>
+                        </div>
+                      ) : null}
                     </div>
                   </button>
                 )
@@ -120,7 +119,7 @@ export function DoctorCreatePage() {
                   >
                     <div className="selection-header">
                       <strong>{medication.name}</strong>
-                      <div className="chip-row">
+                      <div className="selection-badges">
                         {isRecommended ? <span className="pill accent">建議</span> : null}
                         {isActive ? <span className="pill subtle">已選取</span> : null}
                       </div>
@@ -159,7 +158,11 @@ export function DoctorCreatePage() {
                         >
                           <div className="selection-header">
                             <strong>{module.title}</strong>
-                            {isRecommended ? <span className="pill accent">建議</span> : null}
+                            {isRecommended ? (
+                              <div className="selection-badges">
+                                <span className="pill accent">建議</span>
+                              </div>
+                            ) : null}
                           </div>
                           <p>{module.summary}</p>
                         </button>

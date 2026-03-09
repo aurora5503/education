@@ -53,8 +53,7 @@ const toggleRelatedId = (current: string[], id: string) =>
   current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
 
 export function ContentEditorPage() {
-  const { contentPack, updateContentPack, importContentPack, restoreDefaults, exportContentPack, hasLocalChanges } =
-    useContentPack()
+  const { contentPack, updateContentPack, importContentPack, restoreDefaults, exportContentPack } = useContentPack()
   const [section, setSection] = useState<EditorSection>('diagnoses')
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(contentPack.diagnoses[0]?.id ?? '')
   const [selectedMedicationId, setSelectedMedicationId] = useState(contentPack.medications[0]?.id ?? '')
@@ -312,13 +311,6 @@ export function ContentEditorPage() {
           <p className="hero-copy">
             這頁會先讀伺服器上的 JSON 當全站基準內容，再把你這台電腦的修改當成本機暫存。要正式部署時，只要更新伺服器 JSON。
           </p>
-        </div>
-        <div className="hero-card editor-status-card">
-          <span className={`pill ${hasLocalChanges ? 'accent' : 'subtle'}`}>
-            {hasLocalChanges ? '目前有本機暫存版本' : '目前與伺服器版本一致'}
-          </span>
-          <span className="pill subtle">單一使用者</span>
-          <span className="pill subtle">伺服器 JSON 優先</span>
         </div>
       </section>
 

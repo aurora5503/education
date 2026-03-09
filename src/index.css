@@ -392,8 +392,9 @@ button {
 
 .selection-header {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -409,6 +410,21 @@ button {
 .selection-header strong,
 .paper-section-title {
   font-size: 1.05rem;
+}
+
+.selection-header strong {
+  flex: 1 1 220px;
+  min-width: 0;
+  line-height: 1.45;
+}
+
+.selection-badges {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+  justify-content: flex-end;
 }
 
 .chip-row,
