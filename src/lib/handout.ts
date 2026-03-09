@@ -1,15 +1,5 @@
 import { createContentMaps } from '../content/contentPack'
-import type { ContentPack, HandoutDocument, HandoutRequest, VisitContext } from '../types/content'
-
-const formatVisitContext = (visitContext?: VisitContext) => {
-  if (!visitContext) {
-    return undefined
-  }
-
-  const fragments = [visitContext.careStage, visitContext.followUpPlan, visitContext.emphasis].filter(Boolean)
-
-  return fragments.length > 0 ? fragments.join(' | ') : undefined
-}
+import type { ContentPack, HandoutDocument, HandoutRequest } from '../types/content'
 
 const unique = <T,>(items: T[]) => [...new Set(items)]
 
@@ -35,13 +25,12 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
     .map((id) => moduleMap.get(id))
     .filter((module): module is NonNullable<typeof module> => Boolean(module))
 
-  const displayedMedications = medications.slice(0, 2)
-  const displayedModules = modules.slice(0, 2)
+  const displayedMedications = medications.slice(0, 3)
+  const displayedModules = modules.slice(0, 3)
 
   const treatmentSummary = unique([
     ...diagnosis.treatmentFocus,
-    request.visitContext?.emphasis ? `本次特別強調：${request.visitContext.emphasis}` : '',
-    request.visitContext?.followUpPlan ? `追蹤安排：${request.visitContext.followUpPlan}` : '',
+    request.visitContext?.emphasis ? `醫師強調重點：${request.visitContext.emphasis}` : '',
   ])
     .filter(Boolean)
     .slice(0, 4)
@@ -65,8 +54,6 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
       ? `/patient/topic/${diagnosis.slug}?v=${encodeURIComponent(request.contentVersion)}`
       : `/patient/topic/${diagnosis.slug}`,
     contentVersion: request.contentVersion,
-    note: request.note?.trim().slice(0, contentPack.template.noteLimit),
-    visitContextLine: formatVisitContext(request.visitContext),
     generatedAt: new Intl.DateTimeFormat('zh-TW', {
       year: 'numeric',
       month: '2-digit',

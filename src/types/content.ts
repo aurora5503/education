@@ -68,8 +68,6 @@ export interface ContentPack {
 }
 
 export interface VisitContext {
-  careStage?: string
-  followUpPlan?: string
   emphasis?: string
 }
 
@@ -77,7 +75,6 @@ export interface HandoutRequest {
   diagnosisIds: string[]
   medicationIds: string[]
   selectedModuleIds: string[]
-  note?: string
   visitContext?: VisitContext
   contentVersion?: string
 }
@@ -94,8 +91,6 @@ export interface HandoutDocument {
   qrSlug: TopicSlug
   qrPath: string
   contentVersion?: string
-  note?: string
-  visitContextLine?: string
   generatedAt: string
   sectionOrder: Array<'diagnosis' | 'treatment' | 'medication' | 'modules' | 'urgent' | 'qr'>
 }

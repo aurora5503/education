@@ -144,7 +144,6 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
           <p className="paper-note">
             掃描 QR code 可查看主題頁，回家後仍可複習診斷、藥物細項與心理生活模組。
           </p>
-          {document.note ? <p className="handout-note">本次請特別注意：{document.note}</p> : null}
         </div>
         <div className="qr-card">
           <QRCodeSVG value={qrValue} size={96} level="M" includeMargin />
@@ -168,7 +167,6 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
         <header className="paper-header">
           <div>
             <h1>{document.title}</h1>
-            {document.visitContextLine ? <p className="paper-context">{document.visitContextLine}</p> : null}
           </div>
           <div className="paper-meta">
             <span>{document.generatedAt}</span>
