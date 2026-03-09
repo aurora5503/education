@@ -116,6 +116,7 @@ export function PatientTopicPage() {
               </article>
               <article className="topic-card">
                 <h2>心理與生活模組</h2>
+                <p>下面是和這個疾病主題常一起閱讀的延伸建議，請以你的實際醫囑與門診討論為主，不一定每一項都需要套用。</p>
                 <div className="link-stack">
                   {relatedModules.length > 0 ? (
                     relatedModules.map((module) => (
@@ -142,6 +143,7 @@ export function PatientTopicPage() {
               </article>
               <article className="topic-card">
                 <h2>相關藥物細項</h2>
+                <p>下面列的是常見延伸藥物主題，方便回家對照與複習，不代表你目前正在使用這些藥物。</p>
                 <div className="link-stack">
                   {relatedMedications.length > 0 ? (
                     relatedMedications.map((medication) => (
@@ -189,6 +191,7 @@ export function PatientTopicPage() {
                   <span className="chip">{result.topic.groupLabel}</span>
                   <span className="chip">{result.topic.classLabel}</span>
                 </div>
+                <p>這一頁是在幫你辨識這一類藥物常見的作用與副作用重點，不代表你現在正在使用這一類中的所有藥物。</p>
               </article>
               <article className="topic-card">
                 <h2>常見用途與起效</h2>
@@ -246,6 +249,7 @@ export function PatientTopicPage() {
               </article>
               <article className="topic-card">
                 <h2>同一大類的其他細項</h2>
+                <p>下面是同一藥物大類的其他常見細項，主要作為延伸閱讀與辨識參考，不代表這些都適用於你。</p>
                 <div className="link-stack">
                   {siblingMedications.length > 0 ? (
                     siblingMedications.map((medication) => (
@@ -261,6 +265,7 @@ export function PatientTopicPage() {
               </article>
               <article className="topic-card">
                 <h2>回到相關疾病主題</h2>
+                <p>下面列的是這一類藥物常見會搭配閱讀的疾病主題，不代表你一定有這些診斷。</p>
                 <div className="link-stack">
                   {relatedDiagnosesForMedication.length > 0 ? (
                     relatedDiagnosesForMedication.map((diagnosis) => (
@@ -319,6 +324,7 @@ export function PatientTopicPage() {
             <aside className="topic-side">
               <article className="topic-card">
                 <h2>常搭配的疾病主題</h2>
+                <p>下面是這個模組常一起搭配閱讀的疾病主題，作為理解情境的參考，不代表你一定符合全部內容。</p>
                 <div className="link-stack">
                   {relatedDiagnosesForModule.length > 0 ? (
                     relatedDiagnosesForModule.map((diagnosis) => (
@@ -334,6 +340,7 @@ export function PatientTopicPage() {
               </article>
               <article className="topic-card">
                 <h2>其他相關模組</h2>
+                <p>下面是同類型的其他模組，方便延伸閱讀，不代表這些都必須全部照做。</p>
                 <div className="link-stack">
                   {siblingModules.length > 0 ? (
                     siblingModules.map((module) => (
