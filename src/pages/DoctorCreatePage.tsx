@@ -46,8 +46,8 @@ export function DoctorCreatePage() {
     [contentPack.medications],
   )
 
-  const recommendedMedicationIds = selectedDiagnosis?.relatedMedicationIds ?? []
-  const recommendedModuleIds = selectedDiagnosis?.relatedModuleIds ?? []
+  const recommendedMedicationIds = useMemo(() => selectedDiagnosis?.relatedMedicationIds ?? [], [selectedDiagnosis])
+  const recommendedModuleIds = useMemo(() => selectedDiagnosis?.relatedModuleIds ?? [], [selectedDiagnosis])
   const recommendedMedicationGroupIds = useMemo(
     () =>
       unique(
