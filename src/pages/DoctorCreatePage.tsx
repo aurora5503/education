@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { HandoutPreview } from '../components/HandoutPreview'
 import { useContentPack } from '../content/useContentPack'
 import { buildHandoutDocument } from '../lib/handout'
-import type { VisitContext } from '../types/content'
+import type { MedicationTopic, VisitContext } from '../types/content'
 
 const blankVisitContext: VisitContext = {
   careStage: '',
@@ -10,9 +10,19 @@ const blankVisitContext: VisitContext = {
   emphasis: '',
 }
 
+const unique = <T,>(items: T[]) => [...new Set(items)]
+
+interface MedicationGroup {
+  id: string
+  label: string
+  description: string
+  items: MedicationTopic[]
+}
+
 export function DoctorCreatePage() {
   const { contentPack, contentVersion } = useContentPack()
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState('')
+  const [selectedMedicationGroupId, setSelectedMedicationGroupId] = useState('')
   const [selectedMedicationIds, setSelectedMedicationIds] = useState<string[]>([])
   const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>([])
   const [visitContext, setVisitContext] = useState<VisitContext>(blankVisitContext)
@@ -22,6 +32,40 @@ export function DoctorCreatePage() {
     () => contentPack.diagnoses.find((diagnosis) => diagnosis.id === selectedDiagnosisId),
     [contentPack.diagnoses, selectedDiagnosisId],
   )
+
+  const medicationGroups = useMemo<MedicationGroup[]>(
+    () =>
+      unique(contentPack.medications.map((medication) => medication.groupId)).map((groupId) => {
+        const items = contentPack.medications.filter((medication) => medication.groupId === groupId)
+        const firstItem = items[0]
+
+        return {
+          id: groupId,
+          label: firstItem?.groupLabel ?? groupId,
+          description: firstItem?.groupDescription ?? '',
+          items,
+        }
+      }),
+    [contentPack.medications],
+  )
+
+  const recommendedMedicationIds = selectedDiagnosis?.relatedMedicationIds ?? []
+  const recommendedModuleIds = selectedDiagnosis?.relatedModuleIds ?? []
+  const recommendedMedicationGroupIds = useMemo(
+    () =>
+      unique(
+        contentPack.medications
+          .filter((medication) => recommendedMedicationIds.includes(medication.id))
+          .map((medication) => medication.groupId),
+      ),
+    [contentPack.medications, recommendedMedicationIds],
+  )
+
+  const activeMedicationGroupId = medicationGroups.some((group) => group.id === selectedMedicationGroupId)
+    ? selectedMedicationGroupId
+    : recommendedMedicationGroupIds[0] ?? medicationGroups[0]?.id ?? ''
+
+  const activeMedicationGroup = medicationGroups.find((group) => group.id === activeMedicationGroupId) ?? null
 
   const document = useMemo(
     () =>
@@ -36,15 +80,27 @@ export function DoctorCreatePage() {
     [contentPack, contentVersion, note, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
   )
 
-  const recommendedMedicationIds = selectedDiagnosis?.relatedMedicationIds ?? []
-  const recommendedModuleIds = selectedDiagnosis?.relatedModuleIds ?? []
+  const toggleSelection = (
+    current: string[],
+    id: string,
+    setter: (ids: string[]) => void,
+    limit: number,
+  ) => {
+    if (current.includes(id)) {
+      setter(current.filter((item) => item !== id))
+      return
+    }
 
-  const toggleSelection = (current: string[], id: string, setter: (ids: string[]) => void) => {
-    setter(current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
+    if (current.length >= limit) {
+      return
+    }
+
+    setter([...current, id])
   }
 
   const resetComposer = () => {
     setSelectedDiagnosisId('')
+    setSelectedMedicationGroupId('')
     setSelectedMedicationIds([])
     setSelectedModuleIds([])
     setVisitContext(blankVisitContext)
@@ -58,7 +114,7 @@ export function DoctorCreatePage() {
           <p className="eyebrow">衛教建立</p>
           <h1>精神科個人化衛教單</h1>
           <p className="hero-copy">
-            用單頁流程快速組出門診後衛教單。診斷、藥物副作用、心理與生活建議都會即時整合成 A4 列印版。
+            先用單頁思路組出最核心的診斷、藥物與心理生活重點，再把藥物細項與完整衛教留給列印版和病人端主題頁。
           </p>
         </div>
       </section>
@@ -71,7 +127,6 @@ export function DoctorCreatePage() {
                 <p className="eyebrow">1. 診斷選擇</p>
                 <h2>先決定主軸診斷</h2>
               </div>
-              <span className="panel-meta">首發 6 個常見主題</span>
             </div>
             <div className="selection-grid diagnosis-grid" role="radiogroup" aria-label="主軸診斷">
               {contentPack.diagnoses.map((diagnosis) => {
@@ -94,6 +149,7 @@ export function DoctorCreatePage() {
                         </div>
                       ) : null}
                     </div>
+                    <p className="selection-footnote">{diagnosis.coreSummary}</p>
                   </button>
                 )
               })}
@@ -104,51 +160,94 @@ export function DoctorCreatePage() {
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">2. 藥物與副作用</p>
-                <h2>選擇要放進衛教單的藥物類別</h2>
+                <h2>先選藥物大類，再選細項</h2>
               </div>
-              <span className="panel-meta">療程與副作用最優先</span>
+              <span className="panel-meta">紙本最多顯示 2 個細項</span>
             </div>
-            {selectedMedicationIds.length >= 2 ? (
-              <p className="panel-limit-note">已達上限，衛教單最多顯示 2 種藥物，超出部分不會印出。</p>
-            ) : null}
-            <div className="selection-grid medication-grid-panel" role="group" aria-label="藥物類別">
-              {contentPack.medications.map((medication) => {
-                const isActive = selectedMedicationIds.includes(medication.id)
-                const isRecommended = recommendedMedicationIds.includes(medication.id)
+
+            <div className="selection-grid medication-group-grid" role="radiogroup" aria-label="藥物大類">
+              {medicationGroups.map((group) => {
+                const isActive = group.id === activeMedicationGroupId
+                const isRecommended = recommendedMedicationGroupIds.includes(group.id)
 
                 return (
                   <button
-                    key={medication.id}
+                    key={group.id}
                     type="button"
-                    aria-pressed={isActive}
-                    className={`selection-card compact-selection-card ${isActive ? 'active' : ''}`}
-                    onClick={() => toggleSelection(selectedMedicationIds, medication.id, setSelectedMedicationIds)}
+                    role="radio"
+                    aria-checked={isActive}
+                    className={`selection-card medication-group-card ${isActive ? 'active' : ''}`}
+                    onClick={() => setSelectedMedicationGroupId(group.id)}
                   >
                     <div className="selection-header">
-                      <strong>{medication.name}</strong>
+                      <strong>{group.label}</strong>
                       <div className="selection-badges">
                         {isRecommended ? <span className="pill accent">建議</span> : null}
-                        {isActive ? <span className="pill subtle">已選取</span> : null}
+                        {isActive ? <span className="pill subtle">目前展開</span> : null}
                       </div>
                     </div>
+                    <p>{group.description}</p>
+                    <span className="selection-footnote">共 {group.items.length} 個細項</span>
                   </button>
                 )
               })}
             </div>
+
+            {activeMedicationGroup ? (
+              <div className="nested-selection-panel">
+                <div className="nested-selection-heading">
+                  <div>
+                    <p className="eyebrow">藥物細項</p>
+                    <h3>{activeMedicationGroup.label}</h3>
+                  </div>
+                  {selectedMedicationIds.length >= 2 ? (
+                    <span className="panel-limit-note">已達上限，請先取消一個細項再加入新的。</span>
+                  ) : null}
+                </div>
+                <div className="selection-grid medication-detail-grid" role="group" aria-label="藥物細項">
+                  {activeMedicationGroup.items.map((medication) => {
+                    const isActive = selectedMedicationIds.includes(medication.id)
+                    const isRecommended = recommendedMedicationIds.includes(medication.id)
+
+                    return (
+                      <button
+                        key={medication.id}
+                        type="button"
+                        aria-pressed={isActive}
+                        disabled={!isActive && selectedMedicationIds.length >= 2}
+                        className={`selection-card medication-detail-card ${isActive ? 'active' : ''}`}
+                        onClick={() => toggleSelection(selectedMedicationIds, medication.id, setSelectedMedicationIds, 2)}
+                      >
+                        <div className="selection-header">
+                          <strong>{medication.name}</strong>
+                          <div className="selection-badges">
+                            {isRecommended ? <span className="pill accent">建議</span> : null}
+                            {isActive ? <span className="pill subtle">已選取</span> : null}
+                          </div>
+                        </div>
+                        <p className="selection-footnote">{medication.classLabel}</p>
+                        <p>{medication.shortSummary}</p>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : null}
           </section>
 
           <section className="panel">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">3. 心理與生活模組</p>
-                <h2>勾選需要補充的衛教段落</h2>
+                <h2>醫師端先勾簡版，列印與病人端顯示完整版</h2>
               </div>
-              <span className="panel-meta">建議 1 到 3 項</span>
+              <span className="panel-meta">建議 1 到 2 項</span>
             </div>
 
-            {selectedModuleIds.length >= 3 ? (
-              <p className="panel-limit-note">已達上限，衛教單最多顯示 3 個模組，超出部分不會印出。</p>
+            {selectedModuleIds.length >= 2 ? (
+              <p className="panel-limit-note">已達上限，紙本最多顯示 2 個模組，請保留最需要病人帶回家的內容。</p>
             ) : null}
+
             {(['counseling', 'lifestyle'] as const).map((kind) => (
               <div key={kind} className="module-group">
                 <div className="module-group-title">{kind === 'counseling' ? '心理與追蹤' : '生活與功能'}</div>
@@ -164,16 +263,16 @@ export function DoctorCreatePage() {
                           key={module.id}
                           type="button"
                           aria-pressed={isActive}
+                          disabled={!isActive && selectedModuleIds.length >= 2}
                           className={`selection-card module-card-panel ${isActive ? 'active' : ''}`}
-                          onClick={() => toggleSelection(selectedModuleIds, module.id, setSelectedModuleIds)}
+                          onClick={() => toggleSelection(selectedModuleIds, module.id, setSelectedModuleIds, 2)}
                         >
                           <div className="selection-header">
                             <strong>{module.title}</strong>
-                            {isRecommended ? (
-                              <div className="selection-badges">
-                                <span className="pill accent">建議</span>
-                              </div>
-                            ) : null}
+                            <div className="selection-badges">
+                              {isRecommended ? <span className="pill accent">建議</span> : null}
+                              {isActive ? <span className="pill subtle">已選取</span> : null}
+                            </div>
                           </div>
                           <p>{module.summary}</p>
                         </button>
@@ -190,7 +289,6 @@ export function DoctorCreatePage() {
                 <p className="eyebrow">4. 列印前微調</p>
                 <h2>加入本次門診重點</h2>
               </div>
-              <span className="panel-meta">短句即可</span>
             </div>
 
             <div className="field-grid">

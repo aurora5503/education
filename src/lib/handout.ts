@@ -36,18 +36,20 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
     .filter((module): module is NonNullable<typeof module> => Boolean(module))
 
   const displayedMedications = medications.slice(0, 2)
-  const displayedModules = modules.slice(0, 3)
+  const displayedModules = modules.slice(0, 2)
 
   const treatmentSummary = unique([
     ...diagnosis.treatmentFocus,
     request.visitContext?.emphasis ? `本次特別強調：${request.visitContext.emphasis}` : '',
     request.visitContext?.followUpPlan ? `追蹤安排：${request.visitContext.followUpPlan}` : '',
-  ]).filter(Boolean)
+  ])
+    .filter(Boolean)
+    .slice(0, 4)
 
   const urgentFlags = unique([
     ...diagnosis.redFlags,
     ...displayedMedications.flatMap((medication) => medication.whenToCall),
-  ]).slice(0, 5)
+  ]).slice(0, 4)
 
   return {
     title: `${diagnosis.name} 個人化衛教摘要`,

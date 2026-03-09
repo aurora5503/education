@@ -4,7 +4,7 @@ import { ContentPackContext, type ContentPackContextValue } from './ContentPackC
 import { getContentVersion } from './contentVersion'
 import type { CareModule, ContentPack, DiagnosisTopic, MedicationFaq, MedicationTopic } from '../types/content'
 
-const STORAGE_KEY = 'psyedu.content-pack.v1'
+const STORAGE_KEY = 'psyedu.content-pack.v2'
 const getServerContentUrl = () => new URL('content/content-pack.json', window.location.origin + import.meta.env.BASE_URL).toString()
 
 interface StoredDraft {
@@ -96,12 +96,17 @@ const sanitizeMedication = (value: unknown, fallback: MedicationTopic): Medicati
     id,
     slug,
     name,
+    groupId: asString(record.groupId, fallback.groupId),
+    groupLabel: asString(record.groupLabel, fallback.groupLabel),
+    groupDescription: asString(record.groupDescription, fallback.groupDescription),
     classLabel: asString(record.classLabel, fallback.classLabel),
+    shortSummary: asString(record.shortSummary, asString(record.patientIntro, fallback.shortSummary)),
     patientIntro: asString(record.patientIntro, fallback.patientIntro),
     indications: asStringArray(record.indications, fallback.indications),
     onset: asString(record.onset, fallback.onset),
     commonSideEffects: asStringArray(record.commonSideEffects, fallback.commonSideEffects),
     seriousSideEffects: asStringArray(record.seriousSideEffects, fallback.seriousSideEffects),
+    practicalTips: asStringArray(record.practicalTips, fallback.practicalTips),
     missedDoseAdvice: asString(record.missedDoseAdvice, fallback.missedDoseAdvice),
     discontinuationAdvice: asString(record.discontinuationAdvice, fallback.discontinuationAdvice),
     whenToCall: asStringArray(record.whenToCall, fallback.whenToCall),
@@ -118,18 +123,22 @@ const sanitizeModule = (value: unknown, fallback: CareModule): CareModule | null
   }
 
   const id = asString(record.id, '').trim()
+  const slug = asString(record.slug, id).trim()
   const title = asString(record.title, '').trim()
 
-  if (!id || !title) {
+  if (!id || !slug || !title) {
     return null
   }
 
   return {
     id,
+    slug,
     kind: record.kind === 'counseling' || record.kind === 'lifestyle' ? record.kind : fallback.kind,
     title,
     summary: asString(record.summary, fallback.summary),
     bullets: asStringArray(record.bullets, fallback.bullets),
+    patientSummary: asString(record.patientSummary, asString(record.summary, fallback.patientSummary)),
+    practicalSteps: asStringArray(record.practicalSteps, fallback.practicalSteps),
   }
 }
 

@@ -24,12 +24,17 @@ export interface MedicationTopic {
   id: string
   slug: TopicSlug
   name: string
+  groupId: string
+  groupLabel: string
+  groupDescription: string
   classLabel: string
+  shortSummary: string
   patientIntro: string
   indications: string[]
   onset: string
   commonSideEffects: string[]
   seriousSideEffects: string[]
+  practicalTips: string[]
   missedDoseAdvice: string
   discontinuationAdvice: string
   whenToCall: string[]
@@ -39,10 +44,13 @@ export interface MedicationTopic {
 
 export interface CareModule {
   id: string
+  slug: TopicSlug
   kind: 'counseling' | 'lifestyle'
   title: string
   summary: string
+  patientSummary: string
   bullets: string[]
+  practicalSteps: string[]
 }
 
 export interface HandoutTemplate {

@@ -36,11 +36,13 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
           <strong>{document.diagnosis.name}</strong>
           <p>{document.diagnosis.coreSummary}</p>
         </div>
-        <ul className="paper-list two-column">
+        <div className="chip-row">
           {document.diagnosis.commonSymptoms.slice(0, 4).map((item) => (
-            <li key={item}>{item}</li>
+            <span key={item} className="chip">
+              {item}
+            </span>
           ))}
-        </ul>
+        </div>
         <p className="paper-note">{document.diagnosis.courseExpectation}</p>
       </section>
     ),
@@ -67,15 +69,20 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
                   <strong>{medication.name}</strong>
                   <span>{medication.classLabel}</span>
                 </header>
-                <p>{medication.onset}</p>
+                <p>{medication.shortSummary}</p>
                 <div className="chip-row">
-                  {medication.commonSideEffects.slice(0, 4).map((effect) => (
+                  {medication.commonSideEffects.slice(0, 3).map((effect) => (
                     <span key={effect} className="chip warn">
                       {effect}
                     </span>
                   ))}
                 </div>
-                <p className="medication-alert">重要提醒：{medication.discontinuationAdvice}</p>
+                <ul className="paper-list compact-paper-list">
+                  {medication.practicalTips.slice(0, 2).map((tip) => (
+                    <li key={tip}>{tip}</li>
+                  ))}
+                </ul>
+                <p className="medication-alert">停藥提醒：{medication.discontinuationAdvice}</p>
               </article>
             ))}
           </div>
@@ -95,7 +102,12 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
             {document.modules.map((module) => (
               <article key={module.id} className="module-card">
                 <strong>{module.title}</strong>
-                <p>{module.summary}</p>
+                <p>{module.patientSummary}</p>
+                <ul className="paper-list compact-paper-list">
+                  {module.practicalSteps.slice(0, 2).map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ul>
               </article>
             ))}
           </div>
@@ -120,7 +132,7 @@ export function HandoutPreview({ document }: HandoutPreviewProps) {
         <div>
           <div className="paper-section-title">延伸閱讀</div>
           <p className="paper-note">
-            掃描 QR code 可查看不含個資的主題頁，回家後仍可複習症狀、治療與副作用重點。
+            掃描 QR code 可查看不含個資的主題頁，回家後仍可複習診斷、藥物細項與心理生活模組。
           </p>
           {document.note ? <p className="handout-note">本次請特別注意：{document.note}</p> : null}
         </div>

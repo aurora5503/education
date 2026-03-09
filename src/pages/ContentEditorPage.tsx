@@ -61,6 +61,7 @@ export function ContentEditorPage() {
   const [copyStatus, setCopyStatus] = useState('尚未匯出')
   const [diagnosisSlugDraft, setDiagnosisSlugDraft] = useState<string | null>(null)
   const [medicationSlugDraft, setMedicationSlugDraft] = useState<string | null>(null)
+  const [moduleSlugDraft, setModuleSlugDraft] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const activeDiagnosisId = contentPack.diagnoses.some((item) => item.id === selectedDiagnosisId)
@@ -92,6 +93,7 @@ export function ContentEditorPage() {
 
   useEffect(() => { setDiagnosisSlugDraft(null) }, [activeDiagnosisId])
   useEffect(() => { setMedicationSlugDraft(null) }, [activeMedicationId])
+  useEffect(() => { setModuleSlugDraft(null) }, [activeModuleId])
 
   const updateDiagnosis = (id: string, updater: (item: DiagnosisTopic) => DiagnosisTopic) => {
     updateContentPack((current) => ({
@@ -213,12 +215,17 @@ export function ContentEditorPage() {
       id,
       slug,
       name: `新藥物主題 ${contentPack.medications.length + 1}`,
+      groupId: `medication-group-${contentPack.medications.length + 1}`,
+      groupLabel: '請填入藥物大類',
+      groupDescription: '請填入這個大類給醫師端看的短說明。',
       classLabel: '請填入藥物分類',
+      shortSummary: '請填入列印版與選擇卡的核心摘要。',
       patientIntro: '請填入病人版簡介。',
       indications: ['請填入常見用途'],
       onset: '請填入起效時間與療程說明。',
       commonSideEffects: ['請填入常見副作用'],
       seriousSideEffects: ['請填入重要副作用'],
+      practicalTips: ['請填入病人實際可以怎麼做'],
       missedDoseAdvice: '請填入漏藥提醒。',
       discontinuationAdvice: '請填入停藥提醒。',
       whenToCall: ['請填入需要聯絡醫療團隊的情況'],
@@ -236,12 +243,19 @@ export function ContentEditorPage() {
 
   const addModule = () => {
     const id = createId('module')
+    const slug = createUniqueSlug(
+      contentPack.modules.map((item) => item.slug),
+      `module-${contentPack.modules.length + 1}`,
+    )
     const nextItem: CareModule = {
       id,
+      slug,
       kind: 'lifestyle',
       title: `新衛教模組 ${contentPack.modules.length + 1}`,
-      summary: '請填入這個模組想傳達的摘要。',
-      bullets: ['請填入一個重點'],
+      summary: '請填入醫師端要快速看到的摘要。',
+      patientSummary: '請填入病人端與列印版的完整說明。',
+      bullets: ['請填入這個模組要傳達的重點'],
+      practicalSteps: ['請填入病人具體可以怎麼做'],
     }
 
     updateContentPack((current) => ({
@@ -330,9 +344,11 @@ export function ContentEditorPage() {
       <section className="editor-summary-grid">
         <article className="topic-card">
           <p className="eyebrow">目前資料</p>
-          <h2>{contentPack.diagnoses.length} 個症況主題</h2>
-          <p>藥物主題：{contentPack.medications.length} 個　衛教模組：{contentPack.modules.length} 個</p>
-          <p>會同步影響醫師端建立頁、列印預覽與病人端主題頁。</p>
+          <div className="editor-count-stack">
+            <h2>{contentPack.diagnoses.length} 個症況主題</h2>
+            <h2>{contentPack.medications.length} 個藥物主題</h2>
+            <h2>{contentPack.modules.length} 個衛教模組</h2>
+          </div>
           {hasLocalChanges ? <p className="editor-local-changes-note">本機有未同步至伺服器的修改</p> : null}
         </article>
         <article className="topic-card">
@@ -449,7 +465,7 @@ export function ContentEditorPage() {
                   onClick={() => setSelectedMedicationId(item.id)}
                 >
                   <strong>{item.name}</strong>
-                  <span>{item.classLabel}</span>
+                  <span>{item.groupLabel} / {item.classLabel}</span>
                 </button>
               ))}
             </div>
@@ -465,7 +481,7 @@ export function ContentEditorPage() {
                   onClick={() => setSelectedModuleId(item.id)}
                 >
                   <strong>{item.title}</strong>
-                  <span>{item.kind === 'counseling' ? '心理與追蹤' : '生活與功能'}</span>
+                  <span>{item.slug}</span>
                 </button>
               ))}
             </div>
@@ -701,6 +717,15 @@ export function ContentEditorPage() {
                   />
                 </label>
                 <label className="field">
+                  <span>藥物大類</span>
+                  <input
+                    value={currentMedication.groupLabel}
+                    onChange={(event) =>
+                      updateMedication(currentMedication.id, (item) => ({ ...item, groupLabel: event.target.value }))
+                    }
+                  />
+                </label>
+                <label className="field">
                   <span>分類標籤</span>
                   <input
                     value={currentMedication.classLabel}
@@ -729,6 +754,44 @@ export function ContentEditorPage() {
                   />
                 </label>
               </div>
+
+              <label className="field">
+                <span>藥物大類 ID</span>
+                <input
+                  value={currentMedication.groupId}
+                  onChange={(event) =>
+                    updateMedication(currentMedication.id, (item) => ({ ...item, groupId: slugify(event.target.value) }))
+                  }
+                />
+              </label>
+
+              <label className="field">
+                <span>藥物大類說明（醫師端）</span>
+                <textarea
+                  rows={3}
+                  value={currentMedication.groupDescription}
+                  onChange={(event) =>
+                    updateMedication(currentMedication.id, (item) => ({
+                      ...item,
+                      groupDescription: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              <label className="field">
+                <span>核心摘要（選擇卡 / 紙本）</span>
+                <textarea
+                  rows={3}
+                  value={currentMedication.shortSummary}
+                  onChange={(event) =>
+                    updateMedication(currentMedication.id, (item) => ({
+                      ...item,
+                      shortSummary: event.target.value,
+                    }))
+                  }
+                />
+              </label>
 
               <label className="field">
                 <span>病人版簡介</span>
@@ -804,6 +867,19 @@ export function ContentEditorPage() {
                       updateMedication(currentMedication.id, (item) => ({
                         ...item,
                         whenToCall: textToList(event.target.value),
+                      }))
+                    }
+                  />
+                </label>
+                <label className="field">
+                  <span>病人可以怎麼做</span>
+                  <textarea
+                    rows={5}
+                    value={listToText(currentMedication.practicalTips)}
+                    onChange={(event) =>
+                      updateMedication(currentMedication.id, (item) => ({
+                        ...item,
+                        practicalTips: textToList(event.target.value),
                       }))
                     }
                   />
@@ -934,6 +1010,25 @@ export function ContentEditorPage() {
                   />
                 </label>
                 <label className="field">
+                  <span>病人端 slug</span>
+                  <input
+                    value={moduleSlugDraft ?? currentModule.slug}
+                    onChange={(event) => setModuleSlugDraft(event.target.value)}
+                    onBlur={() => {
+                      if (moduleSlugDraft !== null) {
+                        updateModule(currentModule.id, (item) => ({
+                          ...item,
+                          slug: createUniqueSlug(
+                            contentPack.modules.filter((e) => e.id !== item.id).map((e) => e.slug),
+                            moduleSlugDraft,
+                          ),
+                        }))
+                        setModuleSlugDraft(null)
+                      }
+                    }}
+                  />
+                </label>
+                <label className="field">
                   <span>模組分類</span>
                   <select
                     value={currentModule.kind}
@@ -951,12 +1046,23 @@ export function ContentEditorPage() {
               </div>
 
               <label className="field">
-                <span>摘要</span>
+                <span>摘要（醫師端）</span>
                 <textarea
-                  rows={4}
+                  rows={3}
                   value={currentModule.summary}
                   onChange={(event) =>
                     updateModule(currentModule.id, (item) => ({ ...item, summary: event.target.value }))
+                  }
+                />
+              </label>
+
+              <label className="field">
+                <span>完整說明（病人端 / 列印）</span>
+                <textarea
+                  rows={4}
+                  value={currentModule.patientSummary}
+                  onChange={(event) =>
+                    updateModule(currentModule.id, (item) => ({ ...item, patientSummary: event.target.value }))
                   }
                 />
               </label>
@@ -968,6 +1074,20 @@ export function ContentEditorPage() {
                   value={listToText(currentModule.bullets)}
                   onChange={(event) =>
                     updateModule(currentModule.id, (item) => ({ ...item, bullets: textToList(event.target.value) }))
+                  }
+                />
+              </label>
+
+              <label className="field">
+                <span>具體做法</span>
+                <textarea
+                  rows={7}
+                  value={listToText(currentModule.practicalSteps)}
+                  onChange={(event) =>
+                    updateModule(currentModule.id, (item) => ({
+                      ...item,
+                      practicalSteps: textToList(event.target.value),
+                    }))
                   }
                 />
               </label>
