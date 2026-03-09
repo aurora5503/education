@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+tmp_capture/
+.claude/
 
 # Editor directories and files
 .vscode/*
