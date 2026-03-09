@@ -34,7 +34,7 @@ function App() {
 
       <main className={`site-main${isPatientRoute ? ' patient-site-main' : ''}`}>
         <Routes>
-          <Route path="/" element={<Navigate to="/doctor/content" replace />} />
+          <Route path="/" element={<Navigate to="/doctor/create" replace />} />
           <Route path="/doctor/content" element={<ContentEditorPage />} />
           <Route path="/doctor/create" element={<DoctorCreatePage />} />
           <Route path="/patient/topic/:slug" element={<PatientTopicPage />} />
