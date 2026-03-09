@@ -2,7 +2,6 @@ import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { ContentEditorPage } from './pages/ContentEditorPage'
 import { DoctorCreatePage } from './pages/DoctorCreatePage'
 import { PatientTopicPage } from './pages/PatientTopicPage'
-import { PrefillDemoPage } from './pages/PrefillDemoPage'
 
 function App() {
   const location = useLocation()
@@ -29,9 +28,6 @@ function App() {
             >
               病人端
             </NavLink>
-            <NavLink to="/dev/prefill-demo" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-              系統預填
-            </NavLink>
           </nav>
         </header>
       )}
@@ -42,7 +38,6 @@ function App() {
           <Route path="/doctor/content" element={<ContentEditorPage />} />
           <Route path="/doctor/create" element={<DoctorCreatePage />} />
           <Route path="/patient/topic/:slug" element={<PatientTopicPage />} />
-          <Route path="/dev/prefill-demo" element={<PrefillDemoPage />} />
           <Route path="*" element={<Navigate to="/doctor/content" replace />} />
         </Routes>
       </main>

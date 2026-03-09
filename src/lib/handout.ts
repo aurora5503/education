@@ -62,7 +62,6 @@ export function buildHandoutDocument(contentPack: ContentPack, request: HandoutR
     qrPath: `/patient/topic/${diagnosis.slug}`,
     note: request.note?.trim().slice(0, contentPack.template.noteLimit),
     visitContextLine: formatVisitContext(request.visitContext),
-    sourceSystem: request.sourceSystem,
     generatedAt: new Intl.DateTimeFormat('zh-TW', {
       year: 'numeric',
       month: '2-digit',

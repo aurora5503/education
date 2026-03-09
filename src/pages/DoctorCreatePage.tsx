@@ -1,14 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { HandoutPreview } from '../components/HandoutPreview'
 import { useContentPack } from '../content/useContentPack'
 import { buildHandoutDocument } from '../lib/handout'
-import { parseQueryPrefill, PREFILL_MESSAGE_TYPE, readPrefillMessage } from '../lib/prefill'
-import type { PrefillPayload, VisitContext } from '../types/content'
-
-interface PrefillState {
-  via: 'query' | 'postMessage'
-  sourceSystem?: string
-}
+import type { VisitContext } from '../types/content'
 
 const blankVisitContext: VisitContext = {
   careStage: '',
@@ -18,70 +12,16 @@ const blankVisitContext: VisitContext = {
 
 export function DoctorCreatePage() {
   const { contentPack } = useContentPack()
-  const queryPrefill = useMemo(() => parseQueryPrefill(window.location.search, contentPack), [contentPack])
-  const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(queryPrefill?.diagnosisIds?.[0] ?? '')
-  const [selectedMedicationIds, setSelectedMedicationIds] = useState<string[]>(queryPrefill?.medicationIds ?? [])
-  const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>(queryPrefill?.selectedModuleIds ?? [])
-  const [visitContext, setVisitContext] = useState<VisitContext>({
-    careStage: queryPrefill?.visitContext?.careStage ?? '',
-    followUpPlan: queryPrefill?.visitContext?.followUpPlan ?? '',
-    emphasis: queryPrefill?.visitContext?.emphasis ?? '',
-  })
+  const [selectedDiagnosisId, setSelectedDiagnosisId] = useState('')
+  const [selectedMedicationIds, setSelectedMedicationIds] = useState<string[]>([])
+  const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>([])
+  const [visitContext, setVisitContext] = useState<VisitContext>(blankVisitContext)
   const [note, setNote] = useState('')
-  const [prefillState, setPrefillState] = useState<PrefillState | null>(
-    queryPrefill
-      ? {
-          via: 'query',
-          sourceSystem: queryPrefill.sourceSystem,
-        }
-      : null,
-  )
 
   const selectedDiagnosis = useMemo(
     () => contentPack.diagnoses.find((diagnosis) => diagnosis.id === selectedDiagnosisId),
     [contentPack.diagnoses, selectedDiagnosisId],
   )
-
-  const applyPrefill = (payload: PrefillPayload, via: PrefillState['via']) => {
-    if (payload.diagnosisIds?.[0]) {
-      setSelectedDiagnosisId(payload.diagnosisIds[0])
-    }
-
-    if (payload.medicationIds) {
-      setSelectedMedicationIds(payload.medicationIds)
-    }
-
-    if (payload.selectedModuleIds) {
-      setSelectedModuleIds(payload.selectedModuleIds)
-    }
-
-    if (payload.visitContext) {
-      setVisitContext({
-        careStage: payload.visitContext.careStage ?? '',
-        followUpPlan: payload.visitContext.followUpPlan ?? '',
-        emphasis: payload.visitContext.emphasis ?? '',
-      })
-    }
-
-    setPrefillState({
-      via,
-      sourceSystem: payload.sourceSystem,
-    })
-  }
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      const payload = readPrefillMessage(event.data, contentPack)
-
-      if (payload) {
-        applyPrefill(payload, 'postMessage')
-      }
-    }
-
-    window.addEventListener('message', handleMessage)
-
-    return () => window.removeEventListener('message', handleMessage)
-  }, [contentPack])
 
   const document = useMemo(
     () =>
@@ -91,9 +31,8 @@ export function DoctorCreatePage() {
         selectedModuleIds,
         note,
         visitContext,
-        sourceSystem: prefillState?.sourceSystem,
       }),
-    [contentPack, note, prefillState?.sourceSystem, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
+    [contentPack, note, selectedDiagnosisId, selectedMedicationIds, selectedModuleIds, visitContext],
   )
 
   const recommendedMedicationIds = selectedDiagnosis?.relatedMedicationIds ?? []
@@ -109,8 +48,6 @@ export function DoctorCreatePage() {
     setSelectedModuleIds([])
     setVisitContext(blankVisitContext)
     setNote('')
-    setPrefillState(null)
-    window.history.replaceState({}, '', window.location.pathname)
   }
 
   return (
@@ -125,25 +62,10 @@ export function DoctorCreatePage() {
         </div>
         <div className="hero-card">
           <span className="pill">不保存病人個資</span>
-          <span className="pill accent">可接 HIS 預填</span>
-          <span className="pill subtle">Edge 宿主頁可用 postMessage</span>
+          <span className="pill accent">手動勾選產生</span>
+          <span className="pill subtle">適合門診現場列印</span>
         </div>
       </section>
-
-      {prefillState ? (
-        <section className="inline-banner">
-          <div>
-            <strong>已套用預填資料</strong>
-            <p>
-              來源方式：{prefillState.via === 'query' ? 'query string' : PREFILL_MESSAGE_TYPE}
-              {prefillState.sourceSystem ? ` | 來源系統：${prefillState.sourceSystem}` : ''}
-            </p>
-          </div>
-          <button type="button" className="ghost-button" onClick={resetComposer}>
-            清除並重新開始
-          </button>
-        </section>
-      ) : null}
 
       <div className="doctor-layout">
         <section className="composer-stack">

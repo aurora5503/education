@@ -65,21 +65,12 @@ export interface VisitContext {
   emphasis?: string
 }
 
-export interface PrefillPayload {
-  diagnosisIds?: string[]
-  medicationIds?: string[]
-  selectedModuleIds?: string[]
-  visitContext?: VisitContext
-  sourceSystem?: string
-}
-
 export interface HandoutRequest {
   diagnosisIds: string[]
   medicationIds: string[]
   selectedModuleIds: string[]
   note?: string
   visitContext?: VisitContext
-  sourceSystem?: string
 }
 
 export interface HandoutDocument {
@@ -95,6 +86,5 @@ export interface HandoutDocument {
   qrPath: string
   note?: string
   visitContextLine?: string
-  sourceSystem?: string
   generatedAt: string
 }
